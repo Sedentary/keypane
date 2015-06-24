@@ -1,8 +1,11 @@
+body {
+  height: 1000px;
+}
+
 #keypane-canvas {
-  border: solid 2px #000cff;
+  border: solid 1px #000000;
   padding: 5px;
-  position: fixed;
-  border-radius: 15px;
+  border-radius: 10px;
   -webkit-border-radius: 15px;
   -moz-border-radius: 15px;
   filter: alpha(opacity=60);
@@ -11,6 +14,13 @@
   -khtml-opacity: 0.6;
 }
 
+.canvas-container {
+  margin: 0 auto !important;
+}
+
 #keypane-canvas-container {
+  width: 100%;
+  bottom: 15px;
+  position: fixed;
   z-index: 2147483647;
 }
