@@ -9,85 +9,121 @@
 
   window.Keypane = window.Keypane || {};
 
-  var _canvas = null;
-  var _keys = [];
+  Keypane.canvas = null;
+  Keypane.keys = [];
+
+  /**
+   *
+   * @param {string} char
+   * @param {function} fn
+   * @constructor
+   */
+  Keypane.KeyChar = function (char, fn) {
+    this.char = char;
+    this.fn = fn;
+  };
+
+  /**
+   *
+   * @param {Keypane.KeyChar} leftTop
+   * @param {Keypane.KeyChar} leftBottom
+   * @param {Keypane.KeyChar} rightBottom
+   * @param {number} width
+   * @param {number} height
+   * @constructor
+   */
+  Keypane.Key = function (leftTop, leftBottom, rightBottom, width, height) {
+    this.leftTop = leftTop;
+    this.leftBottom = leftBottom;
+    this.rightBottom = rightBottom;
+    this.width = width || 40;
+    this.height = height || 40;
+  };
+
+  /**
+   *
+   * @param {*[]} keys
+   */
+  Keypane.addLine = function (keys) {
+    var line = [];
+    keys.forEach(function (key) {
+      var theKey = new Keypane.Key(null, null, null, null, null);
+
+      if (key instanceof String) {
+        console.log('string');
+
+        theKey.leftTop = new Keypane.KeyChar(key, null);
+
+      } else if (key instanceof Keypane.Key) {
+        console.log('Keypane.Key');
+
+        theKey = key;
+
+      } else if (key instanceof Array) {
+        console.log('Array');
+
+        key.forEach(function (k, index) {
+
+          if (k instanceof String) {
+            console.log(k);
+            k = new Keypane.KeyChar(k, null);
+          }
+
+          switch (index) {
+            case 0:
+              theKey.leftTop = k;
+              break;
+            case 1:
+              theKey.leftBottom = k;
+              break;
+            case 2:
+              theKey.rightBottom = k;
+          }
+        });
+      }
+
+      line.push(theKey);
+    });
+
+    Keypane.keys.push(line);
+  };
 
   /**
    *
    */
   Keypane.init = function () {
-    _canvas = new fabric.Canvas('keypane-canvas');
+    Keypane.canvas = new fabric.Canvas('keypane-canvas');
 
-    _keys = [
-      [ // Line 1
-        {key: "'"},
-        {key: '1'},
-        {key: '2'},
-        {key: '3'},
-        {key: '4'},
-        {key: '5'},
-        {key: '6'},
-        {key: '7'},
-        {key: '8'},
-        {key: '9'},
-        {key: '0'},
-        {key: '-'},
-        {key: '='}
-      ],
-      [ // Line 2
-        {key: 'Q'},
-        {key: 'W'},
-        {key: 'R'},
-        {key: 'T'},
-        {key: 'Y'},
-        {key: 'U'},
-        {key: 'I'},
-        {key: 'O'},
-        {key: 'P'},
-        {key: '´'},
-        {key: '['}
-      ],
-      [ // Line 3
-        {key: 'A'},
-        {key: 'S'},
-        {key: 'D'},
-        {key: 'F'},
-        {key: 'G'},
-        {key: 'H'},
-        {key: 'J'},
-        {key: 'D'},
-        {key: 'K'},
-        {key: 'L'},
-        {key: 'Ç'},
-        {key: '~'},
-        {key: ']'}
-      ],
-      [ // Line 4
-        {key: '\\'},
-        {key: 'Z'},
-        {key: 'X'},
-        {key: 'C'},
-        {key: 'V'},
-        {key: 'B'},
-        {key: 'N'},
-        {key: 'M'},
-        {key: ','},
-        {key: '.'},
-        {key: ';'},
-        {key: '/'}
-      ]
-    ];
+    Keypane.addLine([ // Line 1
+      "'", '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '-', '='
+    ]);
+
+    Keypane.addLine([ // Line 2
+      'Q', 'W', 'R', 'T', 'Y', 'U', 'I', 'O', 'P', '´', '['
+    ]);
+
+    Keypane.addLine([ // Line 3
+      'A', 'S', 'D', 'F', 'G', 'H', 'J', 'D', 'K', 'L', 'Ç', '~', ']'
+    ]);
+
+    Keypane.addLine([ // Line 4
+      '\\', 'Z', 'X', 'C', 'V', 'B', 'N', 'M', ',', '.', ';', '/'
+    ]);
 
     Keypane.updateCanvasSize();
 
-    for (var line = 0; line < _keys.length; line++) { // Lines
+    Keypane.createKeys();
+  };
 
-      var position = 0;
-      for (var key in _keys[line]) { // Keys
-        Keypane.createKey(line, position, _keys[line][key]);
-        position++;
-      }
-    }
+  /**
+   *
+   */
+  Keypane.createKeys = function () {
+    Keypane.keys.forEach(function (line, index) { // Lines
+      line.forEach(function (key, position) { // Keys
+        Keypane.createKey(index, position, key.leftTop.char);
+      });
+    });
   };
 
   /**
@@ -129,24 +165,24 @@
     group.on('mouseover', function () {
       this.item(0).set({fill: '#3A3A3A'});
       this.item(1).set({backgroundColor: '#3A3A3A'});
-      _canvas.renderAll();
+      Keypane.canvas.renderAll();
     });
 
     group.on('mouseout', function () {
       this.item(0).set({fill: '#000000'});
       this.item(1).set({backgroundColor: '#000000'});
-      _canvas.renderAll();
+      Keypane.canvas.renderAll();
     });
 
-    _canvas.add(group);
+    Keypane.canvas.add(group);
   };
 
   /**
    * Updates canvas size based on the keyboard's layout
    */
   Keypane.updateCanvasSize = function () {
-    _canvas.setWidth(43.2 * Keypane.findBiggestKeyLine().length);
-    _canvas.setHeight(43.2 * _keys.length);
+    Keypane.canvas.setWidth(43.2 * Keypane.findBiggestKeyLine().length);
+    Keypane.canvas.setHeight(43.2 * Keypane.keys.length);
   };
 
   /**
@@ -156,10 +192,10 @@
   Keypane.findBiggestKeyLine = function () {
     var line = null;
     var currentSize = 0;
-    for (var l in _keys) {
-      if (_keys[l].length > currentSize) {
-        currentSize = _keys[l].length;
-        line = _keys[l];
+    for (var l in Keypane.keys) {
+      if (Keypane.keys[l].length > currentSize) {
+        currentSize = Keypane.keys[l].length;
+        line = Keypane.keys[l];
       }
     }
     return line;
