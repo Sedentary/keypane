@@ -24,7 +24,7 @@
    */
   Keypane.KeyChar = function (char, fontSize, fn) {
     this.char = char;
-    this.fontSize = fontSize || 20;
+    this.fontSize = fontSize || 18;
     this.fn = fn;
   };
 
@@ -101,24 +101,101 @@
     Keypane.canvas = new fabric.Canvas('keypane-canvas');
 
     Keypane.addLine([ // Line 1
-      "'", '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '-', '='
+      new Keypane.Key(
+        new Keypane.KeyChar('"'), new Keypane.KeyChar("'")
+      ),
+      new Keypane.Key(
+        new Keypane.KeyChar('!'), new Keypane.KeyChar('1'), new Keypane.KeyChar('¹')
+      ),
+      new Keypane.Key(
+        new Keypane.KeyChar('@'), new Keypane.KeyChar('2'), new Keypane.KeyChar('²')
+      ),
+      new Keypane.Key(
+        new Keypane.KeyChar('#'), new Keypane.KeyChar('3'), new Keypane.KeyChar('³')
+      ),
+      new Keypane.Key(
+        new Keypane.KeyChar('$'), new Keypane.KeyChar('4'), new Keypane.KeyChar('£')
+      ),
+      new Keypane.Key(
+        new Keypane.KeyChar('%'), new Keypane.KeyChar('5'), new Keypane.KeyChar('¢')
+      ),
+      new Keypane.Key(
+        new Keypane.KeyChar('¨'), new Keypane.KeyChar('6'), new Keypane.KeyChar('¬')
+      ),
+      new Keypane.Key(
+        new Keypane.KeyChar('&'), new Keypane.KeyChar('7')
+      ),
+      new Keypane.Key(
+        new Keypane.KeyChar('*'), new Keypane.KeyChar('8')
+      ),
+      new Keypane.Key(
+        new Keypane.KeyChar('('), new Keypane.KeyChar('9')
+      ),
+      new Keypane.Key(
+        new Keypane.KeyChar(')'), new Keypane.KeyChar('0')
+      ),
+      new Keypane.Key(
+        new Keypane.KeyChar('_'), new Keypane.KeyChar('-')
+      ),
+      new Keypane.Key(
+        new Keypane.KeyChar('+'), new Keypane.KeyChar('='), new Keypane.KeyChar('§')
+      )
     ]);
 
     Keypane.addLine([ // Line 2
-      'Q', 'W', 'R', 'T', 'Y', 'U', 'I', 'O', 'P', '´', '['
+      new Keypane.Key(
+        new Keypane.KeyChar('Tab', null, function () {
+          console.log('Tab pressed');
+        }), null, null, 60
+      ),
+      'Q', 'W', 'R', 'T', 'Y', 'U', 'I', 'O', 'P',
+      new Keypane.Key(
+        new Keypane.KeyChar('`'), new Keypane.KeyChar('´')
+      ),
+      new Keypane.Key(
+        new Keypane.KeyChar('{'), new Keypane.KeyChar('['), new Keypane.KeyChar('ª')
+      )
     ]);
 
     Keypane.addLine([ // Line 3
-      'A', 'S', 'D', 'F', 'G', 'H', 'J', 'D', 'K', 'L', 'Ç', '~', ']'
+      'A', 'S', 'D', 'F', 'G', 'H', 'J', 'D', 'K', 'L', 'Ç',
+      new Keypane.Key(
+        new Keypane.KeyChar('^'), new Keypane.KeyChar('~')
+      ),
+      new Keypane.Key(
+        new Keypane.KeyChar('}'), new Keypane.KeyChar(']'), new Keypane.KeyChar('º')
+      )
     ]);
 
     Keypane.addLine([ // Line 4
-      '\\', 'Z', 'X', 'C', 'V', 'B', 'N', 'M', ',', '.', ';', '/'
+      '\\', 'Z', 'X', 'C', 'V', 'B', 'N', 'M',
+      new Keypane.Key(
+        new Keypane.KeyChar('<'), new Keypane.KeyChar(',')
+      ),
+      new Keypane.Key(
+        new Keypane.KeyChar('>'), new Keypane.KeyChar('.')
+      ),
+      new Keypane.Key(
+        new Keypane.KeyChar(':'), new Keypane.KeyChar(';')
+      ),
+      new Keypane.Key(
+        new Keypane.KeyChar('?'), new Keypane.KeyChar('/'), new Keypane.KeyChar('°')
+      )
     ]);
 
     Keypane.updateCanvasSize();
 
     Keypane.createKeys();
+
+    _registerCanvasElementEvents();
+  };
+
+  var _registerCanvasElementEvents = function () {
+    var canvas = document.getElementById('keypane-canvas');
+    canvas.addEventListener('mouseout', function (e) {
+
+      Keypane.canvas.renderAll();
+    });
   };
 
   /**
@@ -141,7 +218,37 @@
    * @param {object} key
    */
   Keypane.createKey = function (line, position, key) {
-    var group = new fabric.Group([], {
+    var groupElements = [];
+
+    groupElements.push(new fabric.Rect({ // Creates key rect
+        rx: 5,
+        width: key.width,
+        height: key.height,
+        fill: '#000000',
+        shadow: new fabric.Shadow({offsetX: 2, offsetY: 2, blur: 3})
+      })
+    );
+
+    if (key.leftTop) {
+      groupElements.push(new fabric.Text(key.leftTop.char, { // Creates left top char
+          fill: '#FFFFFF', fontSize: key.leftTop.fontSize, top: 0, left: 5
+        })
+      );
+    }
+    if (key.leftBottom) {
+      groupElements.push(new fabric.Text(key.leftBottom.char, { // Creates left top char
+          fill: '#FFFFFF', fontSize: key.leftBottom.fontSize, top: 18, left: 5
+        })
+      );
+    }
+    if (key.rightBottom) {
+      groupElements.push(new fabric.Text(key.rightBottom.char, { // Creates right bottom char
+          fill: '#FFFFFF', fontSize: key.rightBottom.fontSize, top: 20, left: 25
+        })
+      );
+    }
+
+    var group = new fabric.Group(groupElements, {
       left: (key.width + 3) * position,
       top: (key.height + 3) * line,
       lockScalingX: true,
@@ -149,36 +256,6 @@
       hasControls: false,
       hoverCursor: 'pointer'
     });
-
-    group.add(new fabric.Rect({ // Creates key rect
-        rx: 5,
-        width: key.width || 40,
-        height: key.height || 40,
-        fill: '#000000',
-        shadow: new fabric.Shadow({offsetX: 2, offsetY: 2, blur: 3})
-      })
-    );
-
-    if (key.leftTop) {
-      group.add(new fabric.IText(key.leftTop.char, { // Creates left top char
-          backgroundColor: '#000000', fill: '#FFFFFF', fontSize: key.leftTop.fontSize, top: 5, left: 10
-        })
-      );
-    }
-
-    if (key.leftBottom) {
-      group.add(new fabric.IText(key.leftBottom.char, { // Creates left top char
-          backgroundColor: '#000000', fill: '#FFFFFF', fontSize: key.leftBottom.fontSize, top: 5, left: 10
-        })
-      );
-    }
-
-    if (key.rightBottom) {
-      group.add(new fabric.IText(key.rightBottom.char, { // Creates right bottom char
-          backgroundColor: '#000000', fill: '#FFFFFF', fontSize: key.rightBottom.fontSize, top: 5, left: 10
-        })
-      );
-    }
 
     Keypane.registerKeyEvents(group, key);
 
@@ -194,52 +271,40 @@
     group.on('mouseover', function () {
       this.item(0).set({fill: '#3A3A3A'});
       if (key.leftTop) {
-        this.item(1).set({backgroundColor: '#3A3A3A'});
       }
       if (key.leftBottom) {
-        this.item(2).set({backgroundColor: '#3A3A3A'});
       }
       if (key.rightBottom) {
-        this.item(3).set({backgroundColor: '#3A3A3A'});
       }
       Keypane.canvas.renderAll();
     })
     .on('mouseout', function () {
       this.item(0).set({fill: '#000000'});
       if (key.leftTop) {
-        this.item(1).set({backgroundColor: '#000000'});
       }
       if (key.leftBottom) {
-        this.item(2).set({backgroundColor: '#000000'});
       }
       if (key.rightBottom) {
-        this.item(3).set({backgroundColor: '#000000'});
       }
       Keypane.canvas.renderAll();
     })
     .on('mousedown', function () {
       this.item(0).set({fill: '#000000'});
       if (key.leftTop) {
-        this.item(1).set({backgroundColor: '#000000'});
       }
       if (key.leftBottom) {
-        this.item(2).set({backgroundColor: '#000000'});
       }
       if (key.rightBottom) {
-        this.item(3).set({backgroundColor: '#000000'});
       }
       Keypane.canvas.renderAll();
     })
     .on('mouseup', function () {
       this.item(0).set({fill: '#3A3A3A'});
       if (key.leftTop) {
-        this.item(1).set({backgroundColor: '#3A3A3A'});
       }
       if (key.leftBottom) {
-        this.item(2).set({backgroundColor: '#3A3A3A'});
       }
       if (key.rightBottom) {
-        this.item(3).set({backgroundColor: '#3A3A3A'});
       }
       Keypane.canvas.renderAll();
     });
@@ -249,7 +314,8 @@
    * Updates canvas size based on the keyboard's layout
    */
   Keypane.updateCanvasSize = function () {
-    Keypane.canvas.setWidth(43.2 * Keypane.findBiggestKeyLine().length);
+    var biggestKeyLine = Keypane.findBiggestKeyLine();
+    Keypane.canvas.setWidth(Keypane.findLineWidth(biggestKeyLine));
     Keypane.canvas.setHeight(43.2 * Keypane.keys.length);
   };
 
@@ -261,12 +327,28 @@
     var line = null;
     var currentSize = 0;
     for (var l in Keypane.keys) {
-      if (Keypane.keys[l].length > currentSize) {
-        currentSize = Keypane.keys[l].length;
+      var lineSize = Keypane.findLineWidth(Keypane.keys[l]);
+      if (currentSize < lineSize) {
+        currentSize = lineSize;
         line = Keypane.keys[l];
       }
     }
     return line;
+  };
+
+  /**
+   *
+   * @param {Keypane.Key} line
+   * @returns {number}
+   */
+  Keypane.findLineWidth = function (line) {
+    var lineSize = 0;
+    for (var k in line) {
+      var key = line[k];
+      lineSize = lineSize + (key.width + 3.1);
+    }
+
+    return lineSize;
   };
 
 }(window, fabric));
