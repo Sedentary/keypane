@@ -9,12 +9,14 @@
 
   window.Keypane = window.Keypane || {};
 
+  // Keypane props
   Keypane.canvas = null;
   Keypane.keys = [];
   Keypane.shift = false;
   Keypane.ctrl = false;
   Keypane.alt = false;
   Keypane.altGr = false;
+  Keypane.currentKey = null;
 
   /**
    *
@@ -185,7 +187,7 @@
 
     Keypane.updateCanvasSize();
 
-    Keypane.createKeys();
+    _createKeys();
 
     _registerCanvasElementEvents();
   };
@@ -200,8 +202,9 @@
 
   /**
    *
+   * @private
    */
-  Keypane.createKeys = function () {
+  var _createKeys = function () {
     for (var i = 0; i < Keypane.keys.length; i++) {
       var line = Keypane.keys[i];
       for (var k = 0; k < line.length; k++) {
@@ -257,35 +260,42 @@
       hoverCursor: 'pointer'
     });
 
-    Keypane.registerKeyEvents(group, key);
+    _registerKeyEvents(group, key);
 
     Keypane.canvas.add(group);
+
+    _registerElementEvents();
+  };
+
+  /**
+   *
+   * @private
+   */
+  var _registerElementEvents = function () {
+    var cnvs = document.getElementById('keypane-canvas');
+    cnvs.addEventListener('mouseleave', function (e) {
+      if (Keypane.currentKey) {
+        Keypane.currentKey.item(0).set({fill: '#000000'});
+        Keypane.canvas.renderAll();
+      }
+    });
   };
 
   /**
    *
    * @param {Fabric.Group} group
    * @param {Keypane.Key} key
+   * @private
    */
-  Keypane.registerKeyEvents = function (group, key) {
+  var _registerKeyEvents = function (group, key) {
     group.on('mouseover', function () {
+      Keypane.currentKey = this;
       this.item(0).set({fill: '#3A3A3A'});
-      if (key.leftTop) {
-      }
-      if (key.leftBottom) {
-      }
-      if (key.rightBottom) {
-      }
       Keypane.canvas.renderAll();
     })
     .on('mouseout', function () {
+      Keypane.currentKey = null;
       this.item(0).set({fill: '#000000'});
-      if (key.leftTop) {
-      }
-      if (key.leftBottom) {
-      }
-      if (key.rightBottom) {
-      }
       Keypane.canvas.renderAll();
     })
     .on('mousedown', function () {
