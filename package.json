@@ -1,7 +1,21 @@
 {
   "name": "keypane",
   "version": "0.0.1",
-  "dependencies": {
+  "description": "A crossbrowser virtual keyboard",
+  "license": "BSD",
+  "repository": "Sedentary/keypane",
+  "author": {
+    "name": "Rodrigo Gomes da Silva",
+    "email": "rodrigo.smscom@gmail.com",
+    "web": "https://github.com/rodrigogs"
+  },
+  "keywords": [
+    "keyboard",
+    "virtual",
+    "touch",
+    "canvas"
+  ],
+  "devDependencies": {
     "bower": "^1.4.1"
   }
 }
