@@ -36,12 +36,7 @@ gulp.task('build-css', function () {
 
 gulp.task('build-raw', function () {
   return gulp.src(mainFiles)
-    .pipe(plugins.resolveDependencies({
-      pattern: /\* @requires [\s-]*(.*\.js)/g
-    }))
-    .on('error', function (err) {
-      console.log(err.message);
-    })
+    .pipe(resolveDependencies())
     .pipe(plugins.concat('keypane.js'))
     .pipe(banner())
     .pipe(plugins.stripDebug())
@@ -53,12 +48,7 @@ gulp.task('build-min', function () {
     .pipe(plugins.uglify({
       preserveComments: 'some'
     }))
-    .pipe(plugins.resolveDependencies({
-      pattern: /\* @requires [\s-]*(.*\.js)/g
-    }))
-    .on('error', function (err) {
-      console.log(err.message);
-    })
+    .pipe(resolveDependencies())
     .pipe(plugins.concat('keypane-min.js'))
     .pipe(banner())
     .pipe(plugins.stripDebug())
@@ -67,12 +57,7 @@ gulp.task('build-min', function () {
 
 gulp.task('build-debug', function () {
   return gulp.src(mainFiles)
-    .pipe(plugins.resolveDependencies({
-      pattern: /\* @requires [\s-]*(.*\.js)/g
-    }))
-    .on('error', function (err) {
-      console.log(err.message);
-    })
+    .pipe(resolveDependencies())
     .pipe(plugins.concat('keypane-debug.js'))
     .pipe(banner())
     .pipe(gulp.dest('build'));
@@ -143,4 +128,13 @@ function banner() {
   return plugins.header(stamp, {
     pkg: pkg
   });
+}
+
+function resolveDependencies() {
+  return plugins.resolveDependencies({
+    pattern: /\* @requires [\s-]*(.*\.js)/g
+  })
+    .on('error', function (err) {
+      console.log(err.message);
+    });
 }
