@@ -1,9 +1,7 @@
-/*!
- * Keypane
- *
- * MIT licensed
- * Copyright (C) 2015 Rodrigo Gomes da Silva
+/**
+ * @requires /vendor/fabric.min.js
  */
+
 (function (window, fabric) {
   'use strict';
 
@@ -194,7 +192,7 @@
 
   var _registerCanvasElementEvents = function () {
     var canvas = document.getElementById('keypane-canvas');
-    canvas.addEventListener('mouseout', function (e) {
+    canvas.addEventListener('mouseout', function () {
 
       Keypane.canvas.renderAll();
     });
@@ -228,25 +226,38 @@
         width: key.width,
         height: key.height,
         fill: '#000000',
-        shadow: new fabric.Shadow({offsetX: 2, offsetY: 2, blur: 3})
+        shadow: new fabric.Shadow({
+          offsetX: 2,
+          offsetY: 2,
+          blur: 3
+        })
       })
     );
 
     if (key.leftTop) {
       groupElements.push(new fabric.Text(key.leftTop.char, { // Creates left top char
-          fill: '#FFFFFF', fontSize: key.leftTop.fontSize, top: 0, left: 5
+          fill: '#FFFFFF',
+          fontSize: key.leftTop.fontSize,
+          top: 0,
+          left: 5
         })
       );
     }
     if (key.leftBottom) {
       groupElements.push(new fabric.Text(key.leftBottom.char, { // Creates left top char
-          fill: '#FFFFFF', fontSize: key.leftBottom.fontSize, top: 18, left: 5
+          fill: '#FFFFFF',
+          fontSize: key.leftBottom.fontSize,
+          top: 18,
+          left: 5
         })
       );
     }
     if (key.rightBottom) {
       groupElements.push(new fabric.Text(key.rightBottom.char, { // Creates right bottom char
-          fill: '#FFFFFF', fontSize: key.rightBottom.fontSize, top: 20, left: 25
+          fill: '#FFFFFF',
+          fontSize: key.rightBottom.fontSize,
+          top: 20,
+          left: 25
         })
       );
     }
@@ -273,9 +284,11 @@
    */
   var _registerElementEvents = function () {
     var cnvs = document.getElementById('keypane-canvas');
-    cnvs.addEventListener('mouseleave', function (e) {
+    cnvs.addEventListener('mouseleave', function () {
       if (Keypane.currentKey) {
-        Keypane.currentKey.item(0).set({fill: '#000000'});
+        Keypane.currentKey.item(0).set({
+          fill: '#000000'
+        });
         Keypane.canvas.renderAll();
       }
     });
@@ -290,34 +303,42 @@
   var _registerKeyEvents = function (group, key) {
     group.on('mouseover', function () {
       Keypane.currentKey = this;
-      this.item(0).set({fill: '#3A3A3A'});
+      this.item(0).set({
+        fill: '#3A3A3A'
+      });
       Keypane.canvas.renderAll();
     })
-    .on('mouseout', function () {
-      Keypane.currentKey = null;
-      this.item(0).set({fill: '#000000'});
-      Keypane.canvas.renderAll();
-    })
-    .on('mousedown', function () {
-      this.item(0).set({fill: '#000000'});
-      if (key.leftTop) {
-      }
-      if (key.leftBottom) {
-      }
-      if (key.rightBottom) {
-      }
-      Keypane.canvas.renderAll();
-    })
-    .on('mouseup', function () {
-      this.item(0).set({fill: '#3A3A3A'});
-      if (key.leftTop) {
-      }
-      if (key.leftBottom) {
-      }
-      if (key.rightBottom) {
-      }
-      Keypane.canvas.renderAll();
-    });
+      .on('mouseout', function () {
+        Keypane.currentKey = null;
+        this.item(0).set({
+          fill: '#000000'
+        });
+        Keypane.canvas.renderAll();
+      })
+      .on('mousedown', function () {
+        this.item(0).set({
+          fill: '#000000'
+        });
+        if (key.leftTop) {
+        }
+        if (key.leftBottom) {
+        }
+        if (key.rightBottom) {
+        }
+        Keypane.canvas.renderAll();
+      })
+      .on('mouseup', function () {
+        this.item(0).set({
+          fill: '#3A3A3A'
+        });
+        if (key.leftTop) {
+        }
+        if (key.leftBottom) {
+        }
+        if (key.rightBottom) {
+        }
+        Keypane.canvas.renderAll();
+      });
   };
 
   /**

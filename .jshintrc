@@ -16,8 +16,9 @@
     "describe": true,
     "it": true,
     "mocha": true,
-    "senna": true,
-    "test": true
+    "test": true,
+    "Keypane": true,
+    "fabric": true
   },
   "immed": true,
   "indent": 2,
