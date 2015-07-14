@@ -5,8 +5,26 @@
 (function () {
   'use strict';
 
-  Keypane.Layout.prototype.getQwert = function () {
-    return [
+  /**
+   * Qwert keyboard layout
+   *
+   * @constructor
+   * @extends {Keypane.Layout}
+   */
+  Keypane.Layout.Qwert = function () {
+    Keypane.Layout.Qwert.base(this, 'constructor');
+    this.keys = _getQwertKeys();
+  };
+
+  Keypane.inherits(Keypane.Layout.Qwert, Keypane.Layout);
+
+  /**
+   *
+   * @returns {Array}
+   * @private
+   */
+  var _getQwertKeys = function () {
+    return Keypane.KeyUtils.convertKeyRows([
       [ // Line 1
         new Keypane.Key(
           new Keypane.KeyChar('"'), new Keypane.KeyChar("'")
@@ -86,6 +104,6 @@
           new Keypane.KeyChar('?'), new Keypane.KeyChar('/'), new Keypane.KeyChar('°')
         )
       ]
-    ];
+    ]);
   };
 }());

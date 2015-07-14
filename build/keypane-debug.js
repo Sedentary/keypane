@@ -23,7 +23,11 @@ this.stroke&&t[e](i,s,o),e==="fillText"&&this.fill&&t[e](i,s,o),f=this._applyCha
 
   // Keypane props
   Keypane.canvas = null;
-  Keypane.keys = [];
+  /**
+   *
+   * @type {Keypane.Keyboard}
+   */
+  Keypane.keyboard = null;
   Keypane.shift = false;
   Keypane.ctrl = false;
   Keypane.alt = false;
@@ -32,170 +36,11 @@ this.stroke&&t[e](i,s,o),e==="fillText"&&this.fill&&t[e](i,s,o),f=this._applyCha
 
   /**
    *
-   * @param {string} char
-   * @param {function} fn
-   * @constructor
-   */
-  Keypane.KeyChar = function (char, fontSize, fn) {
-    this.char = char;
-    this.fontSize = fontSize || 18;
-    this.fn = fn;
-  };
-
-  /**
-   *
-   * @param {Keypane.KeyChar} leftTop
-   * @param {Keypane.KeyChar} leftBottom
-   * @param {Keypane.KeyChar} rightBottom
-   * @param {number} width
-   * @param {number} height
-   * @constructor
-   */
-  Keypane.Key = function (leftTop, leftBottom, rightBottom, width, height) {
-    this.leftTop = leftTop;
-    this.leftBottom = leftBottom;
-    this.rightBottom = rightBottom;
-    this.width = width || 40;
-    this.height = height || 40;
-  };
-
-  /**
-   *
-   * @param {*[]} keys
-   */
-  Keypane.addLine = function (keys) {
-    var line = [];
-    for (var i = 0; i < keys.length; i++) {
-      var key = keys[i];
-
-      var theKey = new Keypane.Key(null, null, null, null, null);
-
-      if (typeof key === 'string') {
-
-        theKey.leftTop = new Keypane.KeyChar(key, null);
-
-      } else if (key instanceof Keypane.Key) {
-
-        theKey = key;
-
-      } else if (key instanceof Array) {
-
-        for (var k = 0; k < key.length; k++) {
-          var index = k;
-          key = key[k];
-
-          if (k instanceof String) {
-            console.log(k);
-            k = new Keypane.KeyChar(k, null);
-          }
-
-          switch (index) {
-            case 0:
-              theKey.leftTop = k;
-              break;
-            case 1:
-              theKey.leftBottom = k;
-              break;
-            case 2:
-              theKey.rightBottom = k;
-          }
-        }
-      }
-
-      line.push(theKey);
-    }
-
-    Keypane.keys.push(line);
-  };
-
-  /**
-   *
    */
   Keypane.init = function () {
     Keypane.canvas = new fabric.Canvas('keypane-canvas');
 
-    Keypane.addLine([ // Line 1
-      new Keypane.Key(
-        new Keypane.KeyChar('"'), new Keypane.KeyChar("'")
-      ),
-      new Keypane.Key(
-        new Keypane.KeyChar('!'), new Keypane.KeyChar('1'), new Keypane.KeyChar('¹')
-      ),
-      new Keypane.Key(
-        new Keypane.KeyChar('@'), new Keypane.KeyChar('2'), new Keypane.KeyChar('²')
-      ),
-      new Keypane.Key(
-        new Keypane.KeyChar('#'), new Keypane.KeyChar('3'), new Keypane.KeyChar('³')
-      ),
-      new Keypane.Key(
-        new Keypane.KeyChar('$'), new Keypane.KeyChar('4'), new Keypane.KeyChar('£')
-      ),
-      new Keypane.Key(
-        new Keypane.KeyChar('%'), new Keypane.KeyChar('5'), new Keypane.KeyChar('¢')
-      ),
-      new Keypane.Key(
-        new Keypane.KeyChar('¨'), new Keypane.KeyChar('6'), new Keypane.KeyChar('¬')
-      ),
-      new Keypane.Key(
-        new Keypane.KeyChar('&'), new Keypane.KeyChar('7')
-      ),
-      new Keypane.Key(
-        new Keypane.KeyChar('*'), new Keypane.KeyChar('8')
-      ),
-      new Keypane.Key(
-        new Keypane.KeyChar('('), new Keypane.KeyChar('9')
-      ),
-      new Keypane.Key(
-        new Keypane.KeyChar(')'), new Keypane.KeyChar('0')
-      ),
-      new Keypane.Key(
-        new Keypane.KeyChar('_'), new Keypane.KeyChar('-')
-      ),
-      new Keypane.Key(
-        new Keypane.KeyChar('+'), new Keypane.KeyChar('='), new Keypane.KeyChar('§')
-      )
-    ]);
-
-    Keypane.addLine([ // Line 2
-      new Keypane.Key(
-        new Keypane.KeyChar('Tab', null, function () {
-          console.log('Tab pressed');
-        }), null, null, 60
-      ),
-      'Q', 'W', 'R', 'T', 'Y', 'U', 'I', 'O', 'P',
-      new Keypane.Key(
-        new Keypane.KeyChar('`'), new Keypane.KeyChar('´')
-      ),
-      new Keypane.Key(
-        new Keypane.KeyChar('{'), new Keypane.KeyChar('['), new Keypane.KeyChar('ª')
-      )
-    ]);
-
-    Keypane.addLine([ // Line 3
-      'A', 'S', 'D', 'F', 'G', 'H', 'J', 'D', 'K', 'L', 'Ç',
-      new Keypane.Key(
-        new Keypane.KeyChar('^'), new Keypane.KeyChar('~')
-      ),
-      new Keypane.Key(
-        new Keypane.KeyChar('}'), new Keypane.KeyChar(']'), new Keypane.KeyChar('º')
-      )
-    ]);
-
-    Keypane.addLine([ // Line 4
-      '\\', 'Z', 'X', 'C', 'V', 'B', 'N', 'M',
-      new Keypane.Key(
-        new Keypane.KeyChar('<'), new Keypane.KeyChar(',')
-      ),
-      new Keypane.Key(
-        new Keypane.KeyChar('>'), new Keypane.KeyChar('.')
-      ),
-      new Keypane.Key(
-        new Keypane.KeyChar(':'), new Keypane.KeyChar(';')
-      ),
-      new Keypane.Key(
-        new Keypane.KeyChar('?'), new Keypane.KeyChar('/'), new Keypane.KeyChar('°')
-      )
-    ]);
+    Keypane.keyboard = new Keypane.Keyboard(new Keypane.Layout.Qwert());
 
     Keypane.updateCanvasSize();
 
@@ -217,10 +62,10 @@ this.stroke&&t[e](i,s,o),e==="fillText"&&this.fill&&t[e](i,s,o),f=this._applyCha
    * @private
    */
   var _createKeys = function () {
-    for (var i = 0; i < Keypane.keys.length; i++) {
-      var line = Keypane.keys[i];
-      for (var k = 0; k < line.length; k++) {
-        var key = line[k];
+    for (var i = 0; i < Keypane.keyboard.getLayout().getRows().length; i++) {
+      var row = Keypane.keyboard.getLayout().getRows()[i];
+      for (var k = 0; k < row.length; k++) {
+        var key = row[k];
         Keypane.createKey(i, k, key);
       }
     }
@@ -233,59 +78,8 @@ this.stroke&&t[e](i,s,o),e==="fillText"&&this.fill&&t[e](i,s,o),f=this._applyCha
    * @param {object} key
    */
   Keypane.createKey = function (line, position, key) {
-    var groupElements = [];
 
-    groupElements.push(new fabric.Rect({ // Creates key rect
-        rx: 5,
-        width: key.width,
-        height: key.height,
-        fill: '#000000',
-        shadow: new fabric.Shadow({
-          offsetX: 2,
-          offsetY: 2,
-          blur: 3
-        })
-      })
-    );
-
-    if (key.leftTop) {
-      groupElements.push(new fabric.Text(key.leftTop.char, { // Creates left top char
-          fill: '#FFFFFF',
-          fontSize: key.leftTop.fontSize,
-          top: 0,
-          left: 5
-        })
-      );
-    }
-    if (key.leftBottom) {
-      groupElements.push(new fabric.Text(key.leftBottom.char, { // Creates left top char
-          fill: '#FFFFFF',
-          fontSize: key.leftBottom.fontSize,
-          top: 18,
-          left: 5
-        })
-      );
-    }
-    if (key.rightBottom) {
-      groupElements.push(new fabric.Text(key.rightBottom.char, { // Creates right bottom char
-          fill: '#FFFFFF',
-          fontSize: key.rightBottom.fontSize,
-          top: 20,
-          left: 25
-        })
-      );
-    }
-
-    var group = new fabric.Group(groupElements, {
-      left: (key.width + 3) * position,
-      top: (key.height + 3) * line,
-      lockScalingX: true,
-      lockScalingY: true,
-      hasControls: false,
-      hoverCursor: 'pointer'
-    });
-
-    _registerKeyEvents(group, key);
+    _registerKeyEvents(key);
 
     Keypane.canvas.add(group);
 
@@ -314,8 +108,8 @@ this.stroke&&t[e](i,s,o),e==="fillText"&&this.fill&&t[e](i,s,o),f=this._applyCha
    * @param {Keypane.Key} key
    * @private
    */
-  var _registerKeyEvents = function (group, key) {
-    group.on('mouseover', function () {
+  var _registerKeyEvents = function (key) {
+    key.on('mouseover', function () {
       Keypane.currentKey = this;
       this.item(0).set({
         fill: '#3A3A3A'
@@ -361,7 +155,7 @@ this.stroke&&t[e](i,s,o),e==="fillText"&&this.fill&&t[e](i,s,o),f=this._applyCha
   Keypane.updateCanvasSize = function () {
     var biggestKeyLine = Keypane.findBiggestKeyLine();
     Keypane.canvas.setWidth(Keypane.findLineWidth(biggestKeyLine));
-    Keypane.canvas.setHeight(43.2 * Keypane.keys.length);
+    Keypane.canvas.setHeight(43.2 * Keypane.keyboard.getLayout().getRows().length);
   };
 
   /**
@@ -371,11 +165,11 @@ this.stroke&&t[e](i,s,o),e==="fillText"&&this.fill&&t[e](i,s,o),f=this._applyCha
   Keypane.findBiggestKeyLine = function () {
     var line = null;
     var currentSize = 0;
-    for (var l in Keypane.keys) {
-      var lineSize = Keypane.findLineWidth(Keypane.keys[l]);
+    for (var l in Keypane.keyboard.getLayout().getRows()) {
+      var lineSize = Keypane.findLineWidth(Keypane.keyboard.getLayout().getRows()[l]);
       if (currentSize < lineSize) {
         currentSize = lineSize;
-        line = Keypane.keys[l];
+        line = Keypane.keyboard.getLayout().getRows()[l];
       }
     }
     return line;
@@ -396,4 +190,712 @@ this.stroke&&t[e](i,s,o),e==="fillText"&&this.fill&&t[e](i,s,o),f=this._applyCha
     return lineSize;
   };
 
+  /**
+   * Inherits the prototype methods from one constructor into another.
+   *
+   * Usage:
+   * <pre>
+   * function ParentClass(a, b) { }
+   * ParentClass.prototype.foo = function(a) { }
+   *
+   * function ChildClass(a, b, c) {
+   *   tracking.base(this, a, b);
+   * }
+   * tracking.inherits(ChildClass, ParentClass);
+   *
+   * var child = new ChildClass('a', 'b', 'c');
+   * child.foo();
+   * </pre>
+   *
+   * @param {Function} childCtor Child class.
+   * @param {Function} parentCtor Parent class.
+   */
+  Keypane.inherits = function (childCtor, parentCtor) {
+    function TempCtor() {
+    }
+
+    TempCtor.prototype = parentCtor.prototype;
+    childCtor.superClass_ = parentCtor.prototype;
+    childCtor.prototype = new TempCtor();
+    childCtor.prototype.constructor = childCtor;
+
+    /**
+     * Calls superclass constructor/method.
+     *
+     * This function is only available if you use tracking.inherits to express
+     * inheritance relationships between classes.
+     *
+     * @param {!object} me Should always be "this".
+     * @param {string} methodName The method name to call. Calling superclass
+     *     constructor can be done with the special string 'constructor'.
+     * @param {...*} var_args The arguments to pass to superclass
+     *     method/constructor.
+     * @return {*} The return value of the superclass method/constructor.
+     */
+    childCtor.base = function (me, methodName) {
+      var args = Array.prototype.slice.call(arguments, 2);
+      return parentCtor.prototype[methodName].apply(me, args);
+    };
+  };
+
 }(window, fabric));
+
+(function() {
+  'use strict';
+
+  /**
+   * Keyboard key.
+   * @param {Keypane.KeyChar} leftTop
+   * @param {Keypane.KeyChar} leftBottom
+   * @param {Keypane.KeyChar} rightBottom
+   * @param {number} width
+   * @param {number} height
+   * @param {number} position
+   * @param {number} line
+   * @constructor
+   * @extends {fabric.Group}
+   */
+  Keypane.Key = function (leftTop, leftBottom, rightBottom, width, height) {
+    Keypane.Key.base(this, 'constructor');
+
+    this.leftTop = leftTop;
+    this.leftBottom = leftBottom;
+    this.rightBottom = rightBottom;
+    this.width = width || 40;
+    this.height = height || 40;
+
+    _initGroup();
+  };
+
+  Keypane.inherits(Keypane.Key, fabric.Group);
+
+  /**
+   *
+   * @private
+   */
+  var _initGroup = function () {
+    // fabric.Group
+    this.lockScalingX = true;
+    this.lockScalingY = true;
+    this.hasControls = false;
+    this.hoverCursor = 'pointer';
+
+    this.add(new fabric.Rect({ // Creates key rect
+        rx: 5,
+        width: this.width,
+        height: this.height,
+        fill: this.keyColor,
+        shadow: new fabric.Shadow({
+          offsetX: 2,
+          offsetY: 2,
+          blur: 3
+        })
+      })
+    );
+
+    if (this.leftTop) {
+      this.add(new fabric.Text(this.leftTop.char, { // Creates left top char
+          fill: this.textColor,
+          fontSize: this.leftTop.fontSize,
+          top: 0,
+          left: 5
+        })
+      );
+    }
+    if (this.leftBottom) {
+      this.add(new fabric.Text(this.leftBottom.char, { // Creates left top char
+          fill: this.textColor,
+          fontSize: this.leftBottom.fontSize,
+          top: 18,
+          left: 5
+        })
+      );
+    }
+    if (this.rightBottom) {
+      this.add(new fabric.Text(this.rightBottom.char, { // Creates right bottom char
+          fill: this.textColor,
+          fontSize: this.rightBottom.fontSize,
+          top: 20,
+          left: 25
+        })
+      );
+    }
+  };
+
+  /**
+   *
+   * @type {Keypane.KeyChar}
+   * @default null
+   * @protected
+   */
+  Keypane.Key.prototype.leftTop = null;
+
+  /**
+   *
+   * @type {Keypane.KeyChar}
+   * @default null
+   * @protected
+   */
+  Keypane.Key.prototype.leftBottom = null;
+
+  /**
+   *
+   * @type {Keypane.KeyChar}
+   * @default null
+   * @protected
+   */
+  Keypane.Key.prototype.rightBottom = null;
+
+  /**
+   *
+   * @type {number}
+   * @default 40
+   * @protected
+   */
+  Keypane.Key.prototype.width = null;
+
+  /**
+   *
+   * @type {number}
+   * @default 40
+   * @protected
+   */
+  Keypane.Key.prototype.height = null;
+
+  /**
+   *
+   * @param {Keypane.KeyChar} leftTop
+   */
+  Keypane.Key.prototype.setLeftTop = function (leftTop) {
+    this.leftTop = leftTop;
+  };
+
+  /**
+   *
+   * @returns {null|Keypane.KeyChar}
+   */
+  Keypane.Key.prototype.getLeftTop = function () {
+    return this.leftTop;
+  };
+
+  /**
+   *
+   * @param {Keypane.KeyChar} leftBottom
+   */
+  Keypane.Key.prototype.setLeftBottom = function (leftBottom) {
+    this.leftBottom = leftBottom;
+  };
+
+  /**
+   *
+   * @returns {null|Keypane.KeyChar}
+   */
+  Keypane.Key.prototype.getLeftBottom = function () {
+    return this.leftBottom;
+  };
+
+  /**
+   *
+   * @param {Keypane.KeyChar} rightBottom
+   */
+  Keypane.Key.prototype.setRightBottom = function (rightBottom) {
+    this.rightBottom = rightBottom;
+  };
+
+  /**
+   *
+   * @returns {null|Keypane.KeyChar}
+   */
+  Keypane.Key.prototype.getRightBottom = function () {
+    return this.rightBottom;
+  };
+
+  /**
+   *
+   * @param {number} width
+   */
+  Keypane.Key.prototype.setWidth = function (width) {
+    this.width = width;
+  };
+
+  /**
+   *
+   * @returns {number}
+   */
+  Keypane.Key.prototype.getWidth = function () {
+    return this.width;
+  };
+
+  /**
+   *
+   * @param {number} height
+   */
+  Keypane.Key.prototype.setHeight = function (height) {
+    this.height = height;
+  };
+
+  /**
+   *
+   * @returns {number}
+   */
+  Keypane.Key.prototype.getHeight = function () {
+    return this.height;
+  };
+
+}());
+
+(function () {
+  'use strict';
+
+  /**
+   * The key's char. Each key could have 3 chars.
+   * @param {string} char
+   * @param {number} fontSize If null, 18 by default.
+   * @param {function} behavior
+   * @constructor
+   */
+  Keypane.KeyChar = function (char, fontSize, behavior) {
+    this.char = char;
+    this.fontSize = fontSize || 18;
+    this.behavior = behavior;
+  };
+
+  /**
+   * Char represents what should be shown in the key's text, also
+   * key's default behavior is to perform this char's representing keyboard key.
+   * @type {string}
+   * @default null
+   * @protected
+   */
+  Keypane.KeyChar.prototype.char = null;
+
+  /**
+   * Font display size.
+   * @type {number}
+   * @default null
+   * @protected
+   */
+  Keypane.KeyChar.prototype.fontSize = null;
+
+  /**
+   * Overwrites the default key's behavior to this char.
+   * @type {function}
+   * @default null
+   * @protected
+   */
+  Keypane.KeyChar.prototype.behavior = null;
+
+  /**
+   * Sets char.
+   * @param {number} char
+   */
+  Keypane.KeyChar.prototype.setChar = function (char) {
+    this.char = char;
+  };
+
+  /**
+   * Gets char.
+   * @returns {number}
+   */
+  Keypane.KeyChar.prototype.getChar = function () {
+    return this.char;
+  };
+
+  /**
+   * Sets font size.
+   * @param {number} fontSize
+   */
+  Keypane.KeyChar.prototype.setFontSize = function (fontSize) {
+    this.fontSize = fontSize;
+  };
+
+  /**
+   * Gets font size.
+   * @returns {number}
+   */
+  Keypane.KeyChar.prototype.getFontSize = function () {
+    return this.fontSize;
+  };
+
+  /**
+   * Sets behavior.
+   * @param {function} behavior
+   */
+  Keypane.KeyChar.prototype.setBehavior = function (behavior) {
+    this.behavior = behavior;
+  };
+
+  /**
+   * Gets behavior.
+   * @returns {function}
+   */
+  Keypane.KeyChar.prototype.getBehavior = function () {
+    return this.behavior;
+  };
+
+}());
+
+
+(function() {
+  'use strict';
+
+  /**
+   * Keyboard row of keys.
+   * @param {Keyboard.Key[]}
+   * @constructor
+   */
+  Keypane.KeyRow = function (keys) {
+    this.keys = keys || [];
+  };
+
+  /**
+   * Keyboard.Key array representing a keyboard row of keys.
+   * @type {Keyboard.Key[]}
+   * @default []
+   * @protected
+   */
+  Keypane.KeyRow.prototype.keys = [];
+
+  /**
+   * Sets rows keys.
+   * @param {Keyboard.Key[]} keys
+   */
+  Keypane.KeyRow.prototype.setKeys = function (keys) {
+    this.keys = keys;
+  };
+
+  /**
+   * Returns the row's keys.
+   * @returns {Keyboard.Key[]}
+   */
+  Keypane.KeyRow.prototype.getKeys = function () {
+    return this.keys;
+  };
+
+  /**
+   * Add a key to the row.
+   * @param {Keyboard.Key} key
+   */
+  Keypane.KeyRow.prototype.addKey = function (key) {
+    this.keys.push(key);
+  };
+
+  /**
+   * Add keys to the row.
+   * @param {Keyboard.Key[]} keys
+   */
+  Keypane.KeyRow.prototype.addKeys = function (keys) {
+    this.keys.concat(keys);
+  };
+
+  /**
+   * Removes a key from the row.
+   * @param {number} index Key index in the row. Starts at 0.
+   */
+  Keypane.KeyRow.prototype.removeKey = function (index) {
+    this.keys.splice(index, 1);
+  };
+
+}());
+
+(function() {
+  'use strict';
+
+  /**
+   *
+   * @type {{}}
+   */
+  Keypane.KeyUtils = {};
+
+  /**
+   *
+   * @param {Array.*} rows
+   * @returns {Keypane.KeyRow[]}
+   */
+  Keypane.KeyUtils.convertKeyRows = function (rows) {
+    for (var row in rows) {
+      row = this.convertKeyRow(row);
+    }
+  };
+
+  /**
+   *
+   * @param {Array.*} keys
+   * @returns {Keypane.KeyRow}
+   */
+  Keypane.KeyUtils.convertKeyRow = function (row) {
+    if (typeof row !== Keypane.KeyRow) {
+      for (var key in row) {
+        key = this.convertKey(key);
+      }
+    }
+    return row;
+  };
+
+  /**
+   *
+   * @param {*} key
+   * @returns {Keypane.Key}
+   */
+  Keypane.KeyUtils.convertKey = function (key) {
+    if (typeof key !== Keypane.Key) {
+      key = new Keypane.Key(key);
+    }
+    return key;
+  };
+
+}());
+
+(function() {
+  'use strict';
+
+  /**
+   *
+   * @param {Keypane.Layout}
+   * @constructor
+   */
+  Keypane.Keyboard = function (layout) {
+    this.layout = layout;
+  };
+
+  /**
+   *
+   * @type {Keypane.Layout}
+   * @default null
+   * @protected
+   */
+  Keypane.Keyboard.prototype.layout = null;
+
+  /**
+   * Sets layout.
+   * @param {Keypane.Layout} layout
+   */
+  Keypane.Keyboard.prototype.setLayout = function (layout) {
+    this.layout = layout;
+  };
+
+  /**
+   *
+   * @returns {Keypane.Layout}
+   */
+  Keypane.Keyboard.prototype.getLayout = function () {
+    return this.layout;
+  };
+
+}());
+
+(function () {
+  'use strict';
+
+  /**
+   *
+   * @param {Keypane.KeyRow[]} rows
+   * @param {string} keyColor Key color code. If null, default is #000000.
+   * @param {string} textColor Text color code. If null, default is #FFFFFF.
+   * @constructor
+   */
+  Keypane.Layout = function (rows, keyColor, textColor) {
+    this.rows = rows || [];
+    this.keyColor = keyColor || '#000000';
+    this.textColor = textColor || '#FFFFFF';
+  };
+
+  /**
+   *
+   * @type {Keypane.KeyRow[]}
+   * @default []
+   * @protected
+   */
+  Keypane.Layout.prototype.rows = [];
+
+  /**
+   *
+   * @type {string}
+   * @default null
+   * @protected
+   */
+  Keypane.Layout.prototype.keyColor = null;
+
+  /**
+   *
+   * @type {string}
+   * @default null
+   * @protected
+   */
+  Keypane.Layout.prototype.textColor = null;
+
+  /**
+   * Sets rows.
+   * @param {Keypane.KeyRow[]} rows
+   */
+  Keypane.Layout.prototype.setRows = function (rows) {
+    this.rows = rows;
+  };
+
+  /**
+   * Gets rows.
+   * @returns {Keypane.KeyRow[]}
+   */
+  Keypane.Layout.prototype.getRows = function () {
+    return this.rows;
+  };
+
+  /**
+   * Adds a row.
+   * @param {Keypane.KeyRow} row
+   */
+  Keypane.Layout.prototype.addRow = function (row) {
+    this.keys.concat(line);
+  };
+
+  /**
+   * Removes a row.
+   * @param {number} rowIndex The rows index. Starts at 0.
+   */
+  Keypane.Keyboard.prototype.removeRow = function (rowIndex) {
+    this.keys.splice(index, 1);
+  };
+
+  /**
+   * Sets key color.
+   * @param {string} keyColor A color code.
+   */
+  Keypane.Layout.prototype.setKeyColor = function (keyColor) {
+    this.keyColor = keyColor;
+  };
+
+  /**
+   * Gets key color.
+   * @returns {string}
+   */
+  Keypane.Layout.prototype.getKeyColor = function () {
+    return this.keyColor;
+  };
+
+  /**
+   * Sets text color.
+   * @param {string} textColor
+   */
+  Keypane.Layout.prototype.setTextColor = function (textColor) {
+    this.textColor = textColor;
+  };
+
+  /**
+   * Gets text color.
+   * @returns {string}
+   */
+  Keypane.Layout.prototype.getKeyColor = function () {
+    return this.textColor;
+  };
+
+}());
+
+/**
+ * @requires Layout.js
+ */
+
+(function () {
+  'use strict';
+
+  /**
+   * Qwert keyboard layout
+   *
+   * @constructor
+   * @extends {Keypane.Layout}
+   */
+  Keypane.Layout.Qwert = function () {
+    Keypane.Layout.Qwert.base(this, 'constructor');
+    this.keys = _getQwertKeys();
+  };
+
+  Keypane.inherits(Keypane.Layout.Qwert, Keypane.Layout);
+
+  /**
+   *
+   * @returns {Array}
+   * @private
+   */
+  var _getQwertKeys = function () {
+    return Keypane.KeyUtils.convertKeyRows([
+      [ // Line 1
+        new Keypane.Key(
+          new Keypane.KeyChar('"'), new Keypane.KeyChar("'")
+        ),
+        new Keypane.Key(
+          new Keypane.KeyChar('!'), new Keypane.KeyChar('1'), new Keypane.KeyChar('¹')
+        ),
+        new Keypane.Key(
+          new Keypane.KeyChar('@'), new Keypane.KeyChar('2'), new Keypane.KeyChar('²')
+        ),
+        new Keypane.Key(
+          new Keypane.KeyChar('#'), new Keypane.KeyChar('3'), new Keypane.KeyChar('³')
+        ),
+        new Keypane.Key(
+          new Keypane.KeyChar('$'), new Keypane.KeyChar('4'), new Keypane.KeyChar('£')
+        ),
+        new Keypane.Key(
+          new Keypane.KeyChar('%'), new Keypane.KeyChar('5'), new Keypane.KeyChar('¢')
+        ),
+        new Keypane.Key(
+          new Keypane.KeyChar('¨'), new Keypane.KeyChar('6'), new Keypane.KeyChar('¬')
+        ),
+        new Keypane.Key(
+          new Keypane.KeyChar('&'), new Keypane.KeyChar('7')
+        ),
+        new Keypane.Key(
+          new Keypane.KeyChar('*'), new Keypane.KeyChar('8')
+        ),
+        new Keypane.Key(
+          new Keypane.KeyChar('('), new Keypane.KeyChar('9')
+        ),
+        new Keypane.Key(
+          new Keypane.KeyChar(')'), new Keypane.KeyChar('0')
+        ),
+        new Keypane.Key(
+          new Keypane.KeyChar('_'), new Keypane.KeyChar('-')
+        ),
+        new Keypane.Key(
+          new Keypane.KeyChar('+'), new Keypane.KeyChar('='), new Keypane.KeyChar('§')
+        )
+      ],
+      [ // Line 2
+        new Keypane.Key(
+          new Keypane.KeyChar('Tab', null, function () {
+            console.log('Tab pressed');
+          }), null, null, 60
+        ),
+        'Q', 'W', 'R', 'T', 'Y', 'U', 'I', 'O', 'P',
+        new Keypane.Key(
+          new Keypane.KeyChar('`'), new Keypane.KeyChar('´')
+        ),
+        new Keypane.Key(
+          new Keypane.KeyChar('{'), new Keypane.KeyChar('['), new Keypane.KeyChar('ª')
+        )
+      ],
+      [ // Line 3
+        'A', 'S', 'D', 'F', 'G', 'H', 'J', 'D', 'K', 'L', 'Ç',
+        new Keypane.Key(
+          new Keypane.KeyChar('^'), new Keypane.KeyChar('~')
+        ),
+        new Keypane.Key(
+          new Keypane.KeyChar('}'), new Keypane.KeyChar(']'), new Keypane.KeyChar('º')
+        )
+      ],
+      [ // Line 4
+        '\\', 'Z', 'X', 'C', 'V', 'B', 'N', 'M',
+        new Keypane.Key(
+          new Keypane.KeyChar('<'), new Keypane.KeyChar(',')
+        ),
+        new Keypane.Key(
+          new Keypane.KeyChar('>'), new Keypane.KeyChar('.')
+        ),
+        new Keypane.Key(
+          new Keypane.KeyChar(':'), new Keypane.KeyChar(';')
+        ),
+        new Keypane.Key(
+          new Keypane.KeyChar('?'), new Keypane.KeyChar('/'), new Keypane.KeyChar('°')
+        )
+      ]
+    ]);
+  };
+}());

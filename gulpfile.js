@@ -11,8 +11,15 @@ var stylish = require('jshint-stylish');
 var mainBowerFiles = require('main-bower-files');
 
 var mainFiles = [
+  'src/vendor/*.js',
   'src/keypane.js',
-  'src/vendor/*.js'
+  'src/key/Key.js',
+  'src/key/KeyChar.js',
+  'src/key/KeyRow.js',
+  'src/key/KeyUtils.js',
+  'src/keyboard/Keyboard.js',
+  'src/layout/Layout.js',
+  'src/layout/QwertLayout.js'
 ];
 
 gulp.task('init', function () {
