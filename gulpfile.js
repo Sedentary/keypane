@@ -101,7 +101,7 @@ gulp.task('serve', function () {
 });
 
 gulp.task('watch', ['build', 'serve'], function () {
-  gulp.watch('src/**/*', ['build']);
+  gulp.watch(['src/**/*', '!src/vendor/**'], ['build']);
 });
 
 gulp.task('test', function (done) {

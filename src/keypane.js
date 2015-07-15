@@ -2,7 +2,7 @@
  * @requires /vendor/fabric.min.js
  */
 
-(function (window, fabric) {
+(function (window) {
   'use strict';
 
   window.Keypane = window.Keypane || {};
@@ -224,4 +224,4 @@
     };
   };
 
-}(window, fabric));
+}(window));

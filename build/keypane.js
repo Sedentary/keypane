@@ -16,7 +16,7 @@ this.stroke&&t[e](i,s,o),e==="fillText"&&this.fill&&t[e](i,s,o),f=this._applyCha
  * @requires /vendor/fabric.min.js
  */
 
-(function (window, fabric) {
+(function (window) {
   'use strict';
 
   window.Keypane = window.Keypane || {};
@@ -238,7 +238,7 @@ this.stroke&&t[e](i,s,o),e==="fillText"&&this.fill&&t[e](i,s,o),f=this._applyCha
     };
   };
 
-}(window, fabric));
+}(window));
 
 (function() {
   'use strict';
@@ -264,7 +264,7 @@ this.stroke&&t[e](i,s,o),e==="fillText"&&this.fill&&t[e](i,s,o),f=this._applyCha
     this.width = width || 40;
     this.height = height || 40;
 
-    _initGroup();
+    _initGroup(this);
   };
 
   Keypane.inherits(Keypane.Key, fabric.Group);
@@ -273,18 +273,18 @@ this.stroke&&t[e](i,s,o),e==="fillText"&&this.fill&&t[e](i,s,o),f=this._applyCha
    *
    * @private
    */
-  var _initGroup = function () {
+  var _initGroup = function (key) {
     // fabric.Group
-    this.lockScalingX = true;
-    this.lockScalingY = true;
-    this.hasControls = false;
-    this.hoverCursor = 'pointer';
+    key.lockScalingX = true;
+    key.lockScalingY = true;
+    key.hasControls = false;
+    key.hoverCursor = 'pointer';
 
-    this.add(new fabric.Rect({ // Creates key rect
+    key.add(new fabric.Rect({ // Creates key rect
         rx: 5,
-        width: this.width,
-        height: this.height,
-        fill: this.keyColor,
+        width: key.width,
+        height: key.height,
+        fill: key.keyColor,
         shadow: new fabric.Shadow({
           offsetX: 2,
           offsetY: 2,
@@ -293,28 +293,28 @@ this.stroke&&t[e](i,s,o),e==="fillText"&&this.fill&&t[e](i,s,o),f=this._applyCha
       })
     );
 
-    if (this.leftTop) {
-      this.add(new fabric.Text(this.leftTop.char, { // Creates left top char
-          fill: this.textColor,
-          fontSize: this.leftTop.fontSize,
+    if (key.leftTop) {
+      key.add(new fabric.Text(key.leftTop.char, { // Creates left top char
+          fill: key.textColor,
+          fontSize: key.leftTop.fontSize,
           top: 0,
           left: 5
         })
       );
     }
-    if (this.leftBottom) {
-      this.add(new fabric.Text(this.leftBottom.char, { // Creates left top char
-          fill: this.textColor,
-          fontSize: this.leftBottom.fontSize,
+    if (key.leftBottom) {
+      key.add(new fabric.Text(key.leftBottom.char, { // Creates left top char
+          fill: key.textColor,
+          fontSize: key.leftBottom.fontSize,
           top: 18,
           left: 5
         })
       );
     }
-    if (this.rightBottom) {
-      this.add(new fabric.Text(this.rightBottom.char, { // Creates right bottom char
-          fill: this.textColor,
-          fontSize: this.rightBottom.fontSize,
+    if (key.rightBottom) {
+      key.add(new fabric.Text(key.rightBottom.char, { // Creates right bottom char
+          fill: key.textColor,
+          fontSize: key.rightBottom.fontSize,
           top: 20,
           left: 25
         })
