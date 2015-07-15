@@ -1,4 +1,4 @@
-(function() {
+(function () {
   'use strict';
 
   /**
@@ -16,9 +16,9 @@
   Keypane.Key = function (leftTop, leftBottom, rightBottom, width, height) {
     Keypane.Key.base(this, 'constructor');
 
-    this.leftTop = leftTop;
-    this.leftBottom = leftBottom;
-    this.rightBottom = rightBottom;
+    this.leftTop = leftTop ? (leftTop instanceof Keypane.KeyChar) ? leftTop : new Keypane.KeyChar(leftTop) : null;
+    this.leftBottom = leftBottom ? (leftBottom instanceof Keypane.KeyChar) ? leftBottom : new Keypane.KeyChar(leftBottom) : null;
+    this.rightBottom = rightBottom ? (rightBottom instanceof Keypane.KeyChar) ? rightBottom : new Keypane.KeyChar(rightBottom) : null;
     this.width = width || 40;
     this.height = height || 40;
 

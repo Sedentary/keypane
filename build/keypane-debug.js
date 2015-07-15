@@ -16,37 +16,39 @@ this.stroke&&t[e](i,s,o),e==="fillText"&&this.fill&&t[e](i,s,o),f=this._applyCha
  * @requires /vendor/fabric.min.js
  */
 
-(function (window) {
+(function (window, undefined) {
   'use strict';
 
   window.Keypane = window.Keypane || {};
 
-  // Keypane props
+  /**
+   *
+   * @type {null}
+   */
   Keypane.canvas = null;
+
   /**
    *
    * @type {Keypane.Keyboard}
    */
   Keypane.keyboard = null;
-  Keypane.shift = false;
-  Keypane.ctrl = false;
-  Keypane.alt = false;
-  Keypane.altGr = false;
-  Keypane.currentKey = null;
 
   /**
    *
    */
   Keypane.init = function () {
     Keypane.canvas = new fabric.Canvas('keypane-canvas');
-
     Keypane.keyboard = new Keypane.Keyboard(new Keypane.Layout.Qwert());
 
-    Keypane.updateCanvasSize();
+    console.log(Keypane.keyboard.getLayout().getRows());
 
     _createKeys();
 
     _registerCanvasElementEvents();
+
+    Keypane.updateCanvasSize();
+
+    _registerElementEvents();
   };
 
   var _registerCanvasElementEvents = function () {
@@ -77,13 +79,11 @@ this.stroke&&t[e](i,s,o),e==="fillText"&&this.fill&&t[e](i,s,o),f=this._applyCha
    * @param {number} position
    * @param {object} key
    */
-  Keypane.createKey = function (line, position, key) {
+  Keypane.createKey = function (row, position, key) {
 
     _registerKeyEvents(key);
 
-    Keypane.canvas.add(group);
-
-    _registerElementEvents();
+    Keypane.canvas.add(key);
   };
 
   /**
@@ -93,8 +93,8 @@ this.stroke&&t[e](i,s,o),e==="fillText"&&this.fill&&t[e](i,s,o),f=this._applyCha
   var _registerElementEvents = function () {
     var cnvs = document.getElementById('keypane-canvas');
     cnvs.addEventListener('mouseleave', function () {
-      if (Keypane.currentKey) {
-        Keypane.currentKey.item(0).set({
+      if (Keypane.keyboard.currentKey) {
+        Keypane.keyboard.currentKey.item(0).set({
           fill: '#000000'
         });
         Keypane.canvas.renderAll();
@@ -153,41 +153,88 @@ this.stroke&&t[e](i,s,o),e==="fillText"&&this.fill&&t[e](i,s,o),f=this._applyCha
    * Updates canvas size based on the keyboard's layout
    */
   Keypane.updateCanvasSize = function () {
-    var biggestKeyLine = Keypane.findBiggestKeyLine();
-    Keypane.canvas.setWidth(Keypane.findLineWidth(biggestKeyLine));
+    var biggestKeyLine = Keypane.findBiggestKeyRow();
+    Keypane.canvas.setWidth(Keypane.findRowWidth(biggestKeyLine));
     Keypane.canvas.setHeight(43.2 * Keypane.keyboard.getLayout().getRows().length);
   };
 
   /**
    *
-   * @returns {*}
+   * @returns {Keypane.KeyRow}
    */
-  Keypane.findBiggestKeyLine = function () {
-    var line = null;
+  Keypane.findBiggestKeyRow = function () {
+    var row = null;
     var currentSize = 0;
-    for (var l in Keypane.keyboard.getLayout().getRows()) {
-      var lineSize = Keypane.findLineWidth(Keypane.keyboard.getLayout().getRows()[l]);
-      if (currentSize < lineSize) {
-        currentSize = lineSize;
-        line = Keypane.keyboard.getLayout().getRows()[l];
+    for (var i = 0; i < Keypane.keyboard.getLayout().getRows().length; i++) {
+      var rowSize = Keypane.findRowWidth(Keypane.keyboard.getLayout().getRows()[i]);
+      if (currentSize < rowSize) {
+        currentSize = rowSize;
+        row = Keypane.keyboard.getLayout().getRows()[i];
       }
     }
-    return line;
+
+    console.log(row);
+
+    return row;
   };
 
   /**
    *
-   * @param {Keypane.Key} line
+   * @param {Keypane.KeyRow} row
    * @returns {number}
    */
-  Keypane.findLineWidth = function (line) {
-    var lineSize = 0;
-    for (var k in line) {
-      var key = line[k];
-      lineSize = lineSize + (key.width + 3.1);
+  Keypane.findRowWidth = function (row) {
+    var rowSize = 0;
+    for (var i = 0; i < row.length; i++) {
+      var key = row[i];
+      rowSize = rowSize + (key.width + 3.1);
     }
 
-    return lineSize;
+    console.log(rowSize);
+
+    return rowSize;
+  };
+
+  /**
+   *
+   * @param {Array} rows
+   * @returns {Keypane.KeyRow[]}
+   */
+  Keypane.convertKeyRows = function (rows, cb) {
+    for (var i = 0; i < rows.length; i++) {
+      this.convertKeyRow(rows[i], function (row) {
+        cb(row);
+      });
+    }
+  };
+
+  /**
+   *
+   * @param {*} row
+   * @callback cb
+   */
+  Keypane.convertKeyRow = function (row, cb) {
+    if (!(row instanceof Keypane.KeyRow)) {
+      for (var i = 0; i < row.length; i++) {
+        var index = i;
+        this.convertKey(row[i], function (key) {
+          row[index] = key;
+        });
+      }
+    }
+    cb(row);
+  };
+
+  /**
+   *
+   * @param {*} key
+   * @callback cb
+   */
+  Keypane.convertKey = function (key, cb) {
+    if (typeof key === 'string') {
+      key = (new Keypane.Key(key));
+    }
+    cb(key);
   };
 
   /**
@@ -240,7 +287,7 @@ this.stroke&&t[e](i,s,o),e==="fillText"&&this.fill&&t[e](i,s,o),f=this._applyCha
 
 }(window));
 
-(function() {
+(function () {
   'use strict';
 
   /**
@@ -258,9 +305,9 @@ this.stroke&&t[e](i,s,o),e==="fillText"&&this.fill&&t[e](i,s,o),f=this._applyCha
   Keypane.Key = function (leftTop, leftBottom, rightBottom, width, height) {
     Keypane.Key.base(this, 'constructor');
 
-    this.leftTop = leftTop;
-    this.leftBottom = leftBottom;
-    this.rightBottom = rightBottom;
+    this.leftTop = leftTop ? (leftTop instanceof Keypane.KeyChar) ? leftTop : new Keypane.KeyChar(leftTop) : null;
+    this.leftBottom = leftBottom ? (leftBottom instanceof Keypane.KeyChar) ? leftBottom : new Keypane.KeyChar(leftBottom) : null;
+    this.rightBottom = rightBottom ? (rightBottom instanceof Keypane.KeyChar) ? rightBottom : new Keypane.KeyChar(rightBottom) : null;
     this.width = width || 40;
     this.height = height || 40;
 
@@ -603,54 +650,6 @@ this.stroke&&t[e](i,s,o),e==="fillText"&&this.fill&&t[e](i,s,o),f=this._applyCha
 
   /**
    *
-   * @type {{}}
-   */
-  Keypane.KeyUtils = {};
-
-  /**
-   *
-   * @param {Array.*} rows
-   * @returns {Keypane.KeyRow[]}
-   */
-  Keypane.KeyUtils.convertKeyRows = function (rows) {
-    for (var row in rows) {
-      row = this.convertKeyRow(row);
-    }
-  };
-
-  /**
-   *
-   * @param {Array.*} keys
-   * @returns {Keypane.KeyRow}
-   */
-  Keypane.KeyUtils.convertKeyRow = function (row) {
-    if (typeof row !== Keypane.KeyRow) {
-      for (var key in row) {
-        key = this.convertKey(key);
-      }
-    }
-    return row;
-  };
-
-  /**
-   *
-   * @param {*} key
-   * @returns {Keypane.Key}
-   */
-  Keypane.KeyUtils.convertKey = function (key) {
-    if (typeof key !== Keypane.Key) {
-      key = new Keypane.Key(key);
-    }
-    return key;
-  };
-
-}());
-
-(function() {
-  'use strict';
-
-  /**
-   *
    * @param {Keypane.Layout}
    * @constructor
    */
@@ -667,6 +666,46 @@ this.stroke&&t[e](i,s,o),e==="fillText"&&this.fill&&t[e](i,s,o),f=this._applyCha
   Keypane.Keyboard.prototype.layout = null;
 
   /**
+   *
+   * @type {boolean}
+   * @default false
+   * @protected
+   */
+  Keypane.Keyboard.prototype.shift = false;
+
+  /**
+   *
+   * @type {boolean}
+   * @default false
+   * @protected
+   */
+  Keypane.Keyboard.prototype.ctrl = false;
+
+  /**
+   *
+   * @type {boolean}
+   * @default false
+   * @protected
+   */
+  Keypane.Keyboard.prototype.alt = false;
+
+  /**
+   *
+   * @type {boolean}
+   * @default false
+   * @protected
+   */
+  Keypane.Keyboard.prototype.altGr = false;
+
+  /**
+   *
+   * @type {Keypane.Key}
+   * @default null
+   * @protected
+   */
+  Keypane.Keyboard.prototype.currentKey = null;
+
+  /**
    * Sets layout.
    * @param {Keypane.Layout} layout
    */
@@ -675,11 +714,91 @@ this.stroke&&t[e](i,s,o),e==="fillText"&&this.fill&&t[e](i,s,o),f=this._applyCha
   };
 
   /**
-   *
+   * Gets layout.
    * @returns {Keypane.Layout}
    */
   Keypane.Keyboard.prototype.getLayout = function () {
     return this.layout;
+  };
+
+  /**
+   * Sets if shift key is pressed.
+   * @param {boolean} isPressed
+   */
+  Keypane.Keyboard.prototype.setShift = function (isPressed) {
+    this.shift = isPressed;
+  };
+
+  /**
+   * Returns true if shift key is pressed.
+   * @returns {boolean}
+   */
+  Keypane.Keyboard.prototype.isShiftPressed = function () {
+    return this.shift;
+  };
+
+  /**
+   * Sets if ctrl key is pressed.
+   * @param {boolean} isPressed
+   */
+  Keypane.Keyboard.prototype.setCtrl = function (isPressed) {
+    this.ctrl = isPressed;
+  };
+
+  /**
+   * Returns true if ctrl key is pressed.
+   * @returns {boolean}
+   */
+  Keypane.Keyboard.prototype.isCtrlPressed = function () {
+    return this.ctrl;
+  };
+
+  /**
+   * Sets if alt key is pressed.
+   * @param {boolean} isPressed
+   */
+  Keypane.Keyboard.prototype.setAlt = function (isPressed) {
+    this.alt = isPressed;
+  };
+
+  /**
+   * Returns true if alt key is pressed.
+   * @returns {boolean}
+   */
+  Keypane.Keyboard.prototype.isAltPressed = function () {
+    return this.alt;
+  };
+
+  /**
+   * Sets if altGr key is pressed.
+   * @param {boolean} isPressed
+   */
+  Keypane.Keyboard.prototype.setAltGr = function (isPressed) {
+    this.altGr = isPressed;
+  };
+
+  /**
+   * Returns true if altGr key is pressed.
+   * @returns {boolean}
+   */
+  Keypane.Keyboard.prototype.isAltGrPressed = function () {
+    return this.altGr;
+  };
+
+  /**
+   * Sets the current key.
+   * @param {Keypane.Key} currentKey
+   */
+  Keypane.Keyboard.prototype.setCurrentKey = function (currentKey) {
+    this.currentKey = currentKey;
+  };
+
+  /**
+   * Gets the current key.
+   * @returns {Keypane.Key}
+   */
+  Keypane.Keyboard.prototype.getCurrentKey = function () {
+    return this.currentKey;
   };
 
 }());
@@ -745,7 +864,7 @@ this.stroke&&t[e](i,s,o),e==="fillText"&&this.fill&&t[e](i,s,o),f=this._applyCha
    * @param {Keypane.KeyRow} row
    */
   Keypane.Layout.prototype.addRow = function (row) {
-    this.keys.concat(line);
+    this.keys.concat(row);
   };
 
   /**
@@ -753,7 +872,7 @@ this.stroke&&t[e](i,s,o),e==="fillText"&&this.fill&&t[e](i,s,o),f=this._applyCha
    * @param {number} rowIndex The rows index. Starts at 0.
    */
   Keypane.Keyboard.prototype.removeRow = function (rowIndex) {
-    this.keys.splice(index, 1);
+    this.keys.splice(rowIndex, 1);
   };
 
   /**
@@ -805,97 +924,103 @@ this.stroke&&t[e](i,s,o),e==="fillText"&&this.fill&&t[e](i,s,o),f=this._applyCha
    */
   Keypane.Layout.Qwert = function () {
     Keypane.Layout.Qwert.base(this, 'constructor');
-    this.keys = _getQwertKeys();
+    this.constructRows();
   };
 
   Keypane.inherits(Keypane.Layout.Qwert, Keypane.Layout);
 
   /**
-   *
-   * @returns {Array}
+   * Returns an array of rows for the layout.
+   * @param {Keypane.Layout} current
+   * @returns {Keypane.KeyRow[]}
    * @private
    */
-  var _getQwertKeys = function () {
-    return Keypane.KeyUtils.convertKeyRows([
-      [ // Line 1
-        new Keypane.Key(
-          new Keypane.KeyChar('"'), new Keypane.KeyChar("'")
-        ),
-        new Keypane.Key(
-          new Keypane.KeyChar('!'), new Keypane.KeyChar('1'), new Keypane.KeyChar('¹')
-        ),
-        new Keypane.Key(
-          new Keypane.KeyChar('@'), new Keypane.KeyChar('2'), new Keypane.KeyChar('²')
-        ),
-        new Keypane.Key(
-          new Keypane.KeyChar('#'), new Keypane.KeyChar('3'), new Keypane.KeyChar('³')
-        ),
-        new Keypane.Key(
-          new Keypane.KeyChar('$'), new Keypane.KeyChar('4'), new Keypane.KeyChar('£')
-        ),
-        new Keypane.Key(
-          new Keypane.KeyChar('%'), new Keypane.KeyChar('5'), new Keypane.KeyChar('¢')
-        ),
-        new Keypane.Key(
-          new Keypane.KeyChar('¨'), new Keypane.KeyChar('6'), new Keypane.KeyChar('¬')
-        ),
-        new Keypane.Key(
-          new Keypane.KeyChar('&'), new Keypane.KeyChar('7')
-        ),
-        new Keypane.Key(
-          new Keypane.KeyChar('*'), new Keypane.KeyChar('8')
-        ),
-        new Keypane.Key(
-          new Keypane.KeyChar('('), new Keypane.KeyChar('9')
-        ),
-        new Keypane.Key(
-          new Keypane.KeyChar(')'), new Keypane.KeyChar('0')
-        ),
-        new Keypane.Key(
-          new Keypane.KeyChar('_'), new Keypane.KeyChar('-')
-        ),
-        new Keypane.Key(
-          new Keypane.KeyChar('+'), new Keypane.KeyChar('='), new Keypane.KeyChar('§')
-        )
-      ],
-      [ // Line 2
-        new Keypane.Key(
-          new Keypane.KeyChar('Tab', null, function () {
-            console.log('Tab pressed');
-          }), null, null, 60
-        ),
-        'Q', 'W', 'R', 'T', 'Y', 'U', 'I', 'O', 'P',
-        new Keypane.Key(
-          new Keypane.KeyChar('`'), new Keypane.KeyChar('´')
-        ),
-        new Keypane.Key(
-          new Keypane.KeyChar('{'), new Keypane.KeyChar('['), new Keypane.KeyChar('ª')
-        )
-      ],
-      [ // Line 3
-        'A', 'S', 'D', 'F', 'G', 'H', 'J', 'D', 'K', 'L', 'Ç',
-        new Keypane.Key(
-          new Keypane.KeyChar('^'), new Keypane.KeyChar('~')
-        ),
-        new Keypane.Key(
-          new Keypane.KeyChar('}'), new Keypane.KeyChar(']'), new Keypane.KeyChar('º')
-        )
-      ],
-      [ // Line 4
-        '\\', 'Z', 'X', 'C', 'V', 'B', 'N', 'M',
-        new Keypane.Key(
-          new Keypane.KeyChar('<'), new Keypane.KeyChar(',')
-        ),
-        new Keypane.Key(
-          new Keypane.KeyChar('>'), new Keypane.KeyChar('.')
-        ),
-        new Keypane.Key(
-          new Keypane.KeyChar(':'), new Keypane.KeyChar(';')
-        ),
-        new Keypane.Key(
-          new Keypane.KeyChar('?'), new Keypane.KeyChar('/'), new Keypane.KeyChar('°')
-        )
-      ]
-    ]);
+  Keypane.Layout.Qwert.prototype.constructRows = function () {
+    var self = this;
+
+    Keypane.convertKeyRows([
+        [ // Line 1
+          new Keypane.Key(
+            new Keypane.KeyChar('"'), new Keypane.KeyChar("'")
+          ),
+          new Keypane.Key(
+            new Keypane.KeyChar('!'), new Keypane.KeyChar('1'), new Keypane.KeyChar('¹')
+          ),
+          new Keypane.Key(
+            new Keypane.KeyChar('@'), new Keypane.KeyChar('2'), new Keypane.KeyChar('²')
+          ),
+          new Keypane.Key(
+            new Keypane.KeyChar('#'), new Keypane.KeyChar('3'), new Keypane.KeyChar('³')
+          ),
+          new Keypane.Key(
+            new Keypane.KeyChar('$'), new Keypane.KeyChar('4'), new Keypane.KeyChar('£')
+          ),
+          new Keypane.Key(
+            new Keypane.KeyChar('%'), new Keypane.KeyChar('5'), new Keypane.KeyChar('¢')
+          ),
+          new Keypane.Key(
+            new Keypane.KeyChar('¨'), new Keypane.KeyChar('6'), new Keypane.KeyChar('¬')
+          ),
+          new Keypane.Key(
+            new Keypane.KeyChar('&'), new Keypane.KeyChar('7')
+          ),
+          new Keypane.Key(
+            new Keypane.KeyChar('*'), new Keypane.KeyChar('8')
+          ),
+          new Keypane.Key(
+            new Keypane.KeyChar('('), new Keypane.KeyChar('9')
+          ),
+          new Keypane.Key(
+            new Keypane.KeyChar(')'), new Keypane.KeyChar('0')
+          ),
+          new Keypane.Key(
+            new Keypane.KeyChar('_'), new Keypane.KeyChar('-')
+          ),
+          new Keypane.Key(
+            new Keypane.KeyChar('+'), new Keypane.KeyChar('='), new Keypane.KeyChar('§')
+          )
+        ],
+        [ // Line 2
+          new Keypane.Key(
+            new Keypane.KeyChar('Tab', null, function () {
+              console.log('Tab pressed');
+            }), null, null, 60
+          ),
+          'Q', 'W', 'R', 'T', 'Y', 'U', 'I', 'O', 'P',
+          new Keypane.Key(
+            new Keypane.KeyChar('`'), new Keypane.KeyChar('´')
+          ),
+          new Keypane.Key(
+            new Keypane.KeyChar('{'), new Keypane.KeyChar('['), new Keypane.KeyChar('ª')
+          )
+        ],
+        [ // Line 3
+          'A', 'S', 'D', 'F', 'G', 'H', 'J', 'D', 'K', 'L', 'Ç',
+          new Keypane.Key(
+            new Keypane.KeyChar('^'), new Keypane.KeyChar('~')
+          ),
+          new Keypane.Key(
+            new Keypane.KeyChar('}'), new Keypane.KeyChar(']'), new Keypane.KeyChar('º')
+          )
+        ],
+        [ // Line 4
+          '\\', 'Z', 'X', 'C', 'V', 'B', 'N', 'M',
+          new Keypane.Key(
+            new Keypane.KeyChar('<'), new Keypane.KeyChar(',')
+          ),
+          new Keypane.Key(
+            new Keypane.KeyChar('>'), new Keypane.KeyChar('.')
+          ),
+          new Keypane.Key(
+            new Keypane.KeyChar(':'), new Keypane.KeyChar(';')
+          ),
+          new Keypane.Key(
+            new Keypane.KeyChar('?'), new Keypane.KeyChar('/'), new Keypane.KeyChar('°')
+          )
+        ]
+      ], function (row) {
+        Keypane.Layout.Qwert.base(self, 'addRow', row);
+      }
+    );
   };
 }());

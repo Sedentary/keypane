@@ -2,37 +2,39 @@
  * @requires /vendor/fabric.min.js
  */
 
-(function (window) {
+(function (window, undefined) {
   'use strict';
 
   window.Keypane = window.Keypane || {};
 
-  // Keypane props
+  /**
+   *
+   * @type {null}
+   */
   Keypane.canvas = null;
+
   /**
    *
    * @type {Keypane.Keyboard}
    */
   Keypane.keyboard = null;
-  Keypane.shift = false;
-  Keypane.ctrl = false;
-  Keypane.alt = false;
-  Keypane.altGr = false;
-  Keypane.currentKey = null;
 
   /**
    *
    */
   Keypane.init = function () {
     Keypane.canvas = new fabric.Canvas('keypane-canvas');
-
     Keypane.keyboard = new Keypane.Keyboard(new Keypane.Layout.Qwert());
 
-    Keypane.updateCanvasSize();
+    console.log(Keypane.keyboard.getLayout().getRows());
 
     _createKeys();
 
     _registerCanvasElementEvents();
+
+    Keypane.updateCanvasSize();
+
+    _registerElementEvents();
   };
 
   var _registerCanvasElementEvents = function () {
@@ -63,13 +65,11 @@
    * @param {number} position
    * @param {object} key
    */
-  Keypane.createKey = function (line, position, key) {
+  Keypane.createKey = function (row, position, key) {
 
     _registerKeyEvents(key);
 
-    Keypane.canvas.add(group);
-
-    _registerElementEvents();
+    Keypane.canvas.add(key);
   };
 
   /**
@@ -79,8 +79,8 @@
   var _registerElementEvents = function () {
     var cnvs = document.getElementById('keypane-canvas');
     cnvs.addEventListener('mouseleave', function () {
-      if (Keypane.currentKey) {
-        Keypane.currentKey.item(0).set({
+      if (Keypane.keyboard.currentKey) {
+        Keypane.keyboard.currentKey.item(0).set({
           fill: '#000000'
         });
         Keypane.canvas.renderAll();
@@ -139,41 +139,88 @@
    * Updates canvas size based on the keyboard's layout
    */
   Keypane.updateCanvasSize = function () {
-    var biggestKeyLine = Keypane.findBiggestKeyLine();
-    Keypane.canvas.setWidth(Keypane.findLineWidth(biggestKeyLine));
+    var biggestKeyLine = Keypane.findBiggestKeyRow();
+    Keypane.canvas.setWidth(Keypane.findRowWidth(biggestKeyLine));
     Keypane.canvas.setHeight(43.2 * Keypane.keyboard.getLayout().getRows().length);
   };
 
   /**
    *
-   * @returns {*}
+   * @returns {Keypane.KeyRow}
    */
-  Keypane.findBiggestKeyLine = function () {
-    var line = null;
+  Keypane.findBiggestKeyRow = function () {
+    var row = null;
     var currentSize = 0;
-    for (var l in Keypane.keyboard.getLayout().getRows()) {
-      var lineSize = Keypane.findLineWidth(Keypane.keyboard.getLayout().getRows()[l]);
-      if (currentSize < lineSize) {
-        currentSize = lineSize;
-        line = Keypane.keyboard.getLayout().getRows()[l];
+    for (var i = 0; i < Keypane.keyboard.getLayout().getRows().length; i++) {
+      var rowSize = Keypane.findRowWidth(Keypane.keyboard.getLayout().getRows()[i]);
+      if (currentSize < rowSize) {
+        currentSize = rowSize;
+        row = Keypane.keyboard.getLayout().getRows()[i];
       }
     }
-    return line;
+
+    console.log(row);
+
+    return row;
   };
 
   /**
    *
-   * @param {Keypane.Key} line
+   * @param {Keypane.KeyRow} row
    * @returns {number}
    */
-  Keypane.findLineWidth = function (line) {
-    var lineSize = 0;
-    for (var k in line) {
-      var key = line[k];
-      lineSize = lineSize + (key.width + 3.1);
+  Keypane.findRowWidth = function (row) {
+    var rowSize = 0;
+    for (var i = 0; i < row.length; i++) {
+      var key = row[i];
+      rowSize = rowSize + (key.width + 3.1);
     }
 
-    return lineSize;
+    console.log(rowSize);
+
+    return rowSize;
+  };
+
+  /**
+   *
+   * @param {Array} rows
+   * @returns {Keypane.KeyRow[]}
+   */
+  Keypane.convertKeyRows = function (rows, cb) {
+    for (var i = 0; i < rows.length; i++) {
+      this.convertKeyRow(rows[i], function (row) {
+        cb(row);
+      });
+    }
+  };
+
+  /**
+   *
+   * @param {*} row
+   * @callback cb
+   */
+  Keypane.convertKeyRow = function (row, cb) {
+    if (!(row instanceof Keypane.KeyRow)) {
+      for (var i = 0; i < row.length; i++) {
+        var index = i;
+        this.convertKey(row[i], function (key) {
+          row[index] = key;
+        });
+      }
+    }
+    cb(row);
+  };
+
+  /**
+   *
+   * @param {*} key
+   * @callback cb
+   */
+  Keypane.convertKey = function (key, cb) {
+    if (typeof key === 'string') {
+      key = (new Keypane.Key(key));
+    }
+    cb(key);
   };
 
   /**

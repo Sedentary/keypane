@@ -59,7 +59,7 @@
    * @param {Keypane.KeyRow} row
    */
   Keypane.Layout.prototype.addRow = function (row) {
-    this.keys.concat(line);
+    this.keys.concat(row);
   };
 
   /**
@@ -67,7 +67,7 @@
    * @param {number} rowIndex The rows index. Starts at 0.
    */
   Keypane.Keyboard.prototype.removeRow = function (rowIndex) {
-    this.keys.splice(index, 1);
+    this.keys.splice(rowIndex, 1);
   };
 
   /**

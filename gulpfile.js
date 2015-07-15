@@ -16,7 +16,6 @@ var mainFiles = [
   'src/key/Key.js',
   'src/key/KeyChar.js',
   'src/key/KeyRow.js',
-  'src/key/KeyUtils.js',
   'src/keyboard/Keyboard.js',
   'src/layout/Layout.js',
   'src/layout/QwertLayout.js'
