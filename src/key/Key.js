@@ -209,6 +209,7 @@
   };
 
   Keypane.Key.prototype.setTextColor = function (textColor) {
+    //TODO KeyChar should extend fabric.Text
     if (this._objects[1]) {
       this._objects[1].set('fill', textColor);
     }
