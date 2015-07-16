@@ -40,8 +40,6 @@ this.stroke&&t[e](i,s,o),e==="fillText"&&this.fill&&t[e](i,s,o),f=this._applyCha
     Keypane.canvas = new fabric.Canvas('keypane-canvas');
     Keypane.keyboard = new Keypane.Keyboard(new Keypane.Layout.Qwert());
 
-    void 0;
-
     _createKeys();
 
     _registerCanvasElementEvents();
@@ -75,15 +73,20 @@ this.stroke&&t[e](i,s,o),e==="fillText"&&this.fill&&t[e](i,s,o),f=this._applyCha
 
   /**
    *
-   * @param {number} line
+   * @param {number} row
    * @param {number} position
-   * @param {object} key
+   * @param {Keypane.Key} key
    */
   Keypane.createKey = function (row, position, key) {
+
+    key.setKeyColor(Keypane.keyboard.getLayout().getKeyColor());
+    key.setTextColor(Keypane.keyboard.getLayout().getKeyColor());
 
     _registerKeyEvents(key);
 
     Keypane.canvas.add(key);
+
+    Keypane.canvas.renderAll();
   };
 
   /**
@@ -104,7 +107,6 @@ this.stroke&&t[e](i,s,o),e==="fillText"&&this.fill&&t[e](i,s,o),f=this._applyCha
 
   /**
    *
-   * @param {Fabric.Group} group
    * @param {Keypane.Key} key
    * @private
    */
@@ -489,6 +491,26 @@ this.stroke&&t[e](i,s,o),e==="fillText"&&this.fill&&t[e](i,s,o),f=this._applyCha
     return this.height;
   };
 
+  /**
+   * Sets the key's background color.
+   * @param {string} keyColor
+   */
+  Keypane.Key.prototype.setKeyColor = function (keyColor) {
+    this._objects[0].set('fill', keyColor);
+  };
+
+  Keypane.Key.prototype.setTextColor = function (textColor) {
+    if (this._objects[1]) {
+      this._objects[1].set('fill', textColor);
+    }
+    if (this._objects[2]) {
+      this._objects[2].set('fill', textColor);
+    }
+    if (this._objects[3]) {
+      this._objects[3].set('fill', textColor);
+    }
+  };
+
 }());
 
 (function () {
@@ -864,7 +886,7 @@ this.stroke&&t[e](i,s,o),e==="fillText"&&this.fill&&t[e](i,s,o),f=this._applyCha
    * @param {Keypane.KeyRow} row
    */
   Keypane.Layout.prototype.addRow = function (row) {
-    this.keys.concat(row);
+    this.rows.push(row);
   };
 
   /**
@@ -903,7 +925,7 @@ this.stroke&&t[e](i,s,o),e==="fillText"&&this.fill&&t[e](i,s,o),f=this._applyCha
    * Gets text color.
    * @returns {string}
    */
-  Keypane.Layout.prototype.getKeyColor = function () {
+  Keypane.Layout.prototype.getTextColor = function () {
     return this.textColor;
   };
 
@@ -1019,7 +1041,7 @@ this.stroke&&t[e](i,s,o),e==="fillText"&&this.fill&&t[e](i,s,o),f=this._applyCha
           )
         ]
       ], function (row) {
-        Keypane.Layout.Qwert.base(self, 'addRow', row);
+        self.addRow(row);
       }
     );
   };

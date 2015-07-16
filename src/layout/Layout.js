@@ -59,7 +59,7 @@
    * @param {Keypane.KeyRow} row
    */
   Keypane.Layout.prototype.addRow = function (row) {
-    this.keys.concat(row);
+    this.rows.push(row);
   };
 
   /**
@@ -98,7 +98,7 @@
    * Gets text color.
    * @returns {string}
    */
-  Keypane.Layout.prototype.getKeyColor = function () {
+  Keypane.Layout.prototype.getTextColor = function () {
     return this.textColor;
   };
 

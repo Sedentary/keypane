@@ -108,7 +108,7 @@
           )
         ]
       ], function (row) {
-        Keypane.Layout.Qwert.base(self, 'addRow', row);
+        self.addRow(row);
       }
     );
   };

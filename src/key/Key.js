@@ -200,4 +200,24 @@
     return this.height;
   };
 
+  /**
+   * Sets the key's background color.
+   * @param {string} keyColor
+   */
+  Keypane.Key.prototype.setKeyColor = function (keyColor) {
+    this._objects[0].set('fill', keyColor);
+  };
+
+  Keypane.Key.prototype.setTextColor = function (textColor) {
+    if (this._objects[1]) {
+      this._objects[1].set('fill', textColor);
+    }
+    if (this._objects[2]) {
+      this._objects[2].set('fill', textColor);
+    }
+    if (this._objects[3]) {
+      this._objects[3].set('fill', textColor);
+    }
+  };
+
 }());

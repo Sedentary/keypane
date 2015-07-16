@@ -26,8 +26,6 @@
     Keypane.canvas = new fabric.Canvas('keypane-canvas');
     Keypane.keyboard = new Keypane.Keyboard(new Keypane.Layout.Qwert());
 
-    console.log(Keypane.keyboard.getLayout().getRows());
-
     _createKeys();
 
     _registerCanvasElementEvents();
@@ -61,15 +59,20 @@
 
   /**
    *
-   * @param {number} line
+   * @param {number} row
    * @param {number} position
-   * @param {object} key
+   * @param {Keypane.Key} key
    */
   Keypane.createKey = function (row, position, key) {
+
+    key.setKeyColor(Keypane.keyboard.getLayout().getKeyColor());
+    key.setTextColor(Keypane.keyboard.getLayout().getKeyColor());
 
     _registerKeyEvents(key);
 
     Keypane.canvas.add(key);
+
+    Keypane.canvas.renderAll();
   };
 
   /**
@@ -90,7 +93,6 @@
 
   /**
    *
-   * @param {Fabric.Group} group
    * @param {Keypane.Key} key
    * @private
    */
