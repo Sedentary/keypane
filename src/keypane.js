@@ -148,7 +148,7 @@
 
   /**
    *
-   * @returns {Keypane.KeyRow}
+   * @returns {Keypane.Row}
    */
   Keypane.findBiggestKeyRow = function () {
     var row = null;
@@ -168,7 +168,7 @@
 
   /**
    *
-   * @param {Keypane.KeyRow} row
+   * @param {Keypane.Row} row
    * @returns {number}
    */
   Keypane.findRowWidth = function (row) {
@@ -186,7 +186,7 @@
   /**
    *
    * @param {Array} rows
-   * @returns {Keypane.KeyRow[]}
+   * @returns {Keypane.Row[]}
    */
   Keypane.convertKeyRows = function (rows, cb) {
     for (var i = 0; i < rows.length; i++) {
@@ -202,7 +202,7 @@
    * @callback cb
    */
   Keypane.convertKeyRow = function (row, cb) {
-    if (!(row instanceof Keypane.KeyRow)) {
+    if (!(row instanceof Keypane.Row)) {
       for (var i = 0; i < row.length; i++) {
         var index = i;
         this.convertKey(row[i], function (key) {
@@ -272,5 +272,4 @@
       return parentCtor.prototype[methodName].apply(me, args);
     };
   };
-
 }(window));

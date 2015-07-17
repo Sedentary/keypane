@@ -6,7 +6,7 @@
    * @param {Keyboard.Key[]}
    * @constructor
    */
-  Keypane.KeyRow = function (keys) {
+  Keypane.Row = function (keys) {
     this.keys = keys || [];
   };
 
@@ -16,13 +16,13 @@
    * @default []
    * @protected
    */
-  Keypane.KeyRow.prototype.keys = [];
+  Keypane.Row.prototype.keys = [];
 
   /**
    * Sets rows keys.
    * @param {Keyboard.Key[]} keys
    */
-  Keypane.KeyRow.prototype.setKeys = function (keys) {
+  Keypane.Row.prototype.setKeys = function (keys) {
     this.keys = keys;
   };
 
@@ -30,7 +30,7 @@
    * Returns the row's keys.
    * @returns {Keyboard.Key[]}
    */
-  Keypane.KeyRow.prototype.getKeys = function () {
+  Keypane.Row.prototype.getKeys = function () {
     return this.keys;
   };
 
@@ -38,7 +38,7 @@
    * Add a key to the row.
    * @param {Keyboard.Key} key
    */
-  Keypane.KeyRow.prototype.addKey = function (key) {
+  Keypane.Row.prototype.addKey = function (key) {
     this.keys.push(key);
   };
 
@@ -46,7 +46,7 @@
    * Add keys to the row.
    * @param {Keyboard.Key[]} keys
    */
-  Keypane.KeyRow.prototype.addKeys = function (keys) {
+  Keypane.Row.prototype.addKeys = function (keys) {
     this.keys.concat(keys);
   };
 
@@ -54,7 +54,7 @@
    * Removes a key from the row.
    * @param {number} index Key index in the row. Starts at 0.
    */
-  Keypane.KeyRow.prototype.removeKey = function (index) {
+  Keypane.Row.prototype.removeKey = function (index) {
     this.keys.splice(index, 1);
   };
 

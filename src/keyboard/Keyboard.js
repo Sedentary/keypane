@@ -3,12 +3,20 @@
 
   /**
    *
-   * @param {Keypane.Layout}
+   * @param {HTMLCanvasElement}
+   * @param {...*} var_canvasArgs Arguments to the inherited fabric.Canvas
    * @constructor
+   * @extends {fabric.Canvas}
    */
-  Keypane.Keyboard = function (layout) {
-    this.layout = layout;
+  Keypane.Keyboard = function (canvas) {
+    if (!(canvas && (canvas instanceof HTMLCanvasElement))) {
+      throw new Error('Element must be a HTMLCanvasElement');
+    }
+    var canvasArgs = Array.prototype.slice.call(arguments, 1);
+    Keypane.Keyboard.base(this, 'constructor', canvas, canvasArgs);
   };
+
+  Keypane.inherits(Keypane.Keyboard, fabric.Canvas);
 
   /**
    *

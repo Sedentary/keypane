@@ -3,7 +3,7 @@
 
   /**
    *
-   * @param {Keypane.KeyRow[]} rows
+   * @param {Keypane.Row[]} rows
    * @param {string} keyColor Key color code. If null, default is #000000.
    * @param {string} textColor Text color code. If null, default is #FFFFFF.
    * @constructor
@@ -16,7 +16,7 @@
 
   /**
    *
-   * @type {Keypane.KeyRow[]}
+   * @type {Keypane.Row[]}
    * @default []
    * @protected
    */
@@ -40,7 +40,7 @@
 
   /**
    * Sets rows.
-   * @param {Keypane.KeyRow[]} rows
+   * @param {Keypane.Row[]} rows
    */
   Keypane.Layout.prototype.setRows = function (rows) {
     this.rows = rows;
@@ -48,7 +48,7 @@
 
   /**
    * Gets rows.
-   * @returns {Keypane.KeyRow[]}
+   * @returns {Keypane.Row[]}
    */
   Keypane.Layout.prototype.getRows = function () {
     return this.rows;
@@ -56,7 +56,7 @@
 
   /**
    * Adds a row.
-   * @param {Keypane.KeyRow} row
+   * @param {Keypane.Row} row
    */
   Keypane.Layout.prototype.addRow = function (row) {
     this.rows.push(row);

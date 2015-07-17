@@ -3,9 +3,9 @@
 
   /**
    * Keyboard key.
-   * @param {Keypane.KeyChar} leftTop
-   * @param {Keypane.KeyChar} leftBottom
-   * @param {Keypane.KeyChar} rightBottom
+   * @param {Keypane.Char} leftTop
+   * @param {Keypane.Char} leftBottom
+   * @param {Keypane.Char} rightBottom
    * @param {number} width
    * @param {number} height
    * @param {number} position
@@ -16,9 +16,9 @@
   Keypane.Key = function (leftTop, leftBottom, rightBottom, width, height) {
     Keypane.Key.base(this, 'constructor');
 
-    this.leftTop = leftTop ? (leftTop instanceof Keypane.KeyChar) ? leftTop : new Keypane.KeyChar(leftTop) : null;
-    this.leftBottom = leftBottom ? (leftBottom instanceof Keypane.KeyChar) ? leftBottom : new Keypane.KeyChar(leftBottom) : null;
-    this.rightBottom = rightBottom ? (rightBottom instanceof Keypane.KeyChar) ? rightBottom : new Keypane.KeyChar(rightBottom) : null;
+    this.leftTop = leftTop ? (leftTop instanceof Keypane.Char) ? leftTop : new Keypane.Char(leftTop) : null;
+    this.leftBottom = leftBottom ? (leftBottom instanceof Keypane.Char) ? leftBottom : new Keypane.Char(leftBottom) : null;
+    this.rightBottom = rightBottom ? (rightBottom instanceof Keypane.Char) ? rightBottom : new Keypane.Char(rightBottom) : null;
     this.width = width || 40;
     this.height = height || 40;
 
@@ -82,7 +82,7 @@
 
   /**
    *
-   * @type {Keypane.KeyChar}
+   * @type {Keypane.Char}
    * @default null
    * @protected
    */
@@ -90,7 +90,7 @@
 
   /**
    *
-   * @type {Keypane.KeyChar}
+   * @type {Keypane.Char}
    * @default null
    * @protected
    */
@@ -98,7 +98,7 @@
 
   /**
    *
-   * @type {Keypane.KeyChar}
+   * @type {Keypane.Char}
    * @default null
    * @protected
    */
@@ -122,7 +122,7 @@
 
   /**
    *
-   * @param {Keypane.KeyChar} leftTop
+   * @param {Keypane.Char} leftTop
    */
   Keypane.Key.prototype.setLeftTop = function (leftTop) {
     this.leftTop = leftTop;
@@ -130,7 +130,7 @@
 
   /**
    *
-   * @returns {null|Keypane.KeyChar}
+   * @returns {null|Keypane.Char}
    */
   Keypane.Key.prototype.getLeftTop = function () {
     return this.leftTop;
@@ -138,7 +138,7 @@
 
   /**
    *
-   * @param {Keypane.KeyChar} leftBottom
+   * @param {Keypane.Char} leftBottom
    */
   Keypane.Key.prototype.setLeftBottom = function (leftBottom) {
     this.leftBottom = leftBottom;
@@ -146,7 +146,7 @@
 
   /**
    *
-   * @returns {null|Keypane.KeyChar}
+   * @returns {null|Keypane.Char}
    */
   Keypane.Key.prototype.getLeftBottom = function () {
     return this.leftBottom;
@@ -154,7 +154,7 @@
 
   /**
    *
-   * @param {Keypane.KeyChar} rightBottom
+   * @param {Keypane.Char} rightBottom
    */
   Keypane.Key.prototype.setRightBottom = function (rightBottom) {
     this.rightBottom = rightBottom;
@@ -162,7 +162,7 @@
 
   /**
    *
-   * @returns {null|Keypane.KeyChar}
+   * @returns {null|Keypane.Char}
    */
   Keypane.Key.prototype.getRightBottom = function () {
     return this.rightBottom;
@@ -209,7 +209,7 @@
   };
 
   Keypane.Key.prototype.setTextColor = function (textColor) {
-    //TODO KeyChar should extend fabric.Text
+    //TODO Char should extend fabric.Text
     if (this._objects[1]) {
       this._objects[1].set('fill', textColor);
     }
